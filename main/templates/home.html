@@ -1,159 +1,180 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset ="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetPals</title>
+</head>
+<body>
     <style>
-        /* Resetting default browser styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Basic styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            line-height: 1.6;
             margin: 0;
             padding: 0;
         }
 
         header {
-            background: #333;
-            color: #fff;
+            background-color: #4CAF50;
             padding: 20px;
             text-align: center;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        nav {
+            background-color: #333;
+            padding: 10px 0;
             text-align: center;
         }
 
-        nav ul li {
-            display: inline;
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        .profile-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-info {
             margin-right: 20px;
         }
 
-        nav ul li a {
-            color: #fff;
+        .profile-info span {
+            font-weight: bold;
+        }
+
+        .profile-actions a {
+            color: white;
             text-decoration: none;
-            transition: color 0.3s ease;
+            margin-left: 20px;
         }
 
-        nav ul li a:hover {
-            color: #ffd700; /* Change to desired hover color */
+        .profile-actions a:hover {
+            text-decoration: underline;
         }
 
-        .hero {
-            text-align: center;
-            padding: 50px 20px;
+        section {
+            padding: 20px;
         }
 
-        .hero h2 {
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #333;
-            color: #fff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #555;
+        h2 {
+            color: #4CAF50;
         }
 
         .services {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
 
         .service {
-            flex: 1;
-            margin: 20px;
+            border: 1px solid #ddd;
             padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: transform 0.3s ease;
         }
 
-        .service:hover {
-            transform: translateY(-5px);
+        .contact {
+            text-align: center;
+            margin-top: 20px;
         }
 
-        .service h3 {
-            margin-bottom: 10px;
-            font-size: 24px;
+        form {
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        .service p {
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
             font-size: 16px;
         }
 
-        footer {
-            background: #333;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        footer p {
-            font-size: 14px;
+        input[type="submit"]:hover {
+            background-color: #45a049;
         }
     </style>
-<head>
-    <title>PET PALS</title>
 </head>
-<body>
-   <h1>PetPals</h1>
-   <p>Hey there, pet parents! Welcome to Pet Pals – your pet's home away from home. We know your furry pals aren't just pets; they're cherished members of your family. 
-    That's why we're here to give them the love, care, and attention they deserve while you're away.</p>
-    <nav>
-        <ul>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    <h2>What we Offer :</h2>
-    <ul>
-        <li>Pet Hotel</li>
-        <li>Pet Sitting</li>
-        <li>Dog Walking</li>  
-        <li>Pet Grooming</li>
-        <ul>
-            <li>Bathing and drying</li>
-            <li>Nail trimmming</li>
-            <li>Haircut and brushing</li>
-            <li>Ear clean</li>
-            <li>Paw care</li>
-            <li>Oral care</li>
-          </ul> 
-    </ul>
-      
-        
 
+<body>
+    <header>
+        <h1> <img src="paw logo.png" width="50" height="50"> PetPals</h1>
+        <img src="">
+        <div class="profile-bar">
+            <div class="profile-info">
+                <span>Welcome !</span>
+            </div>
+            <div class="profile-actions">
+                <a href="#">My Profile</a>
+                <a href="#">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <a href="#introduction">Home</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+        <section id="introduction" class="introduction">
+            <h2>Welcome to PetPals !</h2>
+            <img src="animals.jpg">
+            <p>- Your pet's comfort and care are our top priorities. At PetPals, we provide professional grooming treatments from skilled specialists who love what they do. Whether it's a simple wash and dry, a stylish trim, or a full grooming session, we ensure your beloved pet looks their best and feels great. Visit us to experience the ultimate in pet pampering.</p>
+            <h2>Why choose PetPals ?</h2>
+        <p>At PetPals, we understand that your furry friends deserve the very best care, which is why we pride ourselves on our expert groomers who provide nothing short of exceptional pampering. From luxurious baths and stylish haircuts to gentle nail trims and fun-filled daycare options, we offer a comprehensive range of services tailored to meet your pet's unique needs. With our easy-to-use booking platform, scheduling your pet's grooming session has never been more convenient. Trust PetPals for a grooming experience that leaves your pet looking and feeling their absolute best. Because when it comes to your beloved companions, they deserve the PetPals treatment.</p>
+        </section>
+    <section id="services">
+        <h2>Services We Offer :</h2>
+        <div class="services">
+            <div class="service">
+                <h3>Bath & Brush</h3>
+                <p>Our expert groomers will lovingly cleanse and groom your pet, leaving them feeling fresh, clean, and oh-so-fluffy. 
+                   Say goodbye to tangled fur and hello to silky-smooth coats!</p>
+            </div>
+            <div class="service">
+                <h3>Haircut & Styling</h3>
+                <p>Transform your pet's look from 'ruff' to fabulous with our expert haircut and styling service! Our talented groomers will work their magic to create a tailored look that suits your pet's personality and lifestyle.</p>
+            </div>
+            <div class="service">
+                <h3>Nail Trimming</h3>
+                <p>Trimming nails made easy! Gentle care for happy paws.</p>
+            </div>
+            <div class="service">
+                <h3>Pet Daycare</h3>
+                <p>Give your pet a day of fun and friends at our daycare! With attentive staff and plenty of playtime, they'll love every moment.</p>
+            </div>
+            <div class="service">
+                <h3>Pet Hotel</h3>
+                <p>Indulge your pet in the lap of luxury with our premier pet hotel! We provide a five-star experience for your beloved furry companions and rest assured your pet will feel right at home with us.</p>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>	31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, 
+            Petaling Jaya, Selangor</p>
+        <p>Phone/WhatsApp: 03-7722 4584</p>
+        <p>Email: petpalsofficial@gmail.com</p>
 </body>
 </html>
