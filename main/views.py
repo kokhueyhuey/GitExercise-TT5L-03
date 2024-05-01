@@ -50,6 +50,3 @@ def home(request):
     logout(request)
     context={}
     return render(request, "home.html", context)
-
-
-
