@@ -7,8 +7,12 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 
 # Create your views here.
-from .forms import CreateUserForm
+from .forms import CreateUserForm, ProfileForm
 
+def profilePage(request):
+
+    context = {}
+    return render(request, 'profile.html', context)
 
 def registerPage(request):
     form = CreateUserForm()
@@ -17,9 +21,8 @@ def registerPage(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
-            # user = form.cleaned_data.get('username')
+            user = form.cleaned_data.get('username')
             messages.success(request,'Account was successfully created!')
-
 
             return redirect('login')
 
@@ -47,6 +50,7 @@ def logoutUser(request):
     return redirect('login')
 
 def home(request):
+    # print(request.user)
     logout(request)
     context={}
     return render(request, "home.html", context)

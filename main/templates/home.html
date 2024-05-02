@@ -177,10 +177,20 @@
         <img src="{% static 'image/PetPals.png' %}" alt="Pawlogo" width="auto" height="80">
         <div class="profile-bar">
             <div class="profile-info">
-                <span>Welcome !</span>
+                {% if request.user.is_authenticated %}
+                    <span>Welcome, {{ request.user }}!</span>
+                {% else %}
+                    <span>Welcome, Guest!</span>
+                {% endif %}
+
+                <!-- {% if request.user.is_authenticated %}
+                    <span>Welcome {{ request.user.username }}</span>
+                {% endif %} -->
+
+                <!-- <span>Welcome {{request.user}}</span> -->
             </div>
             <div class="profile-actions">
-                <a href="#">My Profile</a>
+                <a href="profile">My Profile</a>
                 <a href="login">Sign In</a>
                 <a href="register">Sign Up</a>
                 <a href="logout">Logout</a>
