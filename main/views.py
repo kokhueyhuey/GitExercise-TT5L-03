@@ -9,6 +9,11 @@ from django.contrib import messages
 # Create your views here.
 from .forms import CreateUserForm, ProfileForm
 
+def BookingPage(request):
+
+    context = {}
+    return render(request, 'bookingpage.html', context)
+
 def profilePage(request):
 
     context = {}
@@ -50,7 +55,6 @@ def logoutUser(request):
     return redirect('login')
 
 def home(request):
-    # print(request.user)
     logout(request)
     context={}
     return render(request, "home.html", context)
