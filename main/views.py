@@ -9,6 +9,9 @@ from django.contrib import messages
 # Create your views here.
 from .forms import CreateUserForm
 
+def BookingPage(request):
+    context={}
+    return render(request, "bookingpage.html", context)
 
 def registerPage(request):
     form = CreateUserForm()
