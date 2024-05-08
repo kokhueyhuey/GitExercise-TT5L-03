@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login ,logout
 
 from django.contrib import messages
 from django import forms
-from .forms import CreateUserForm
+from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm
 
 # Create your views here.
 
@@ -15,8 +15,39 @@ def BookingPage(request):
     context = {}
     return render(request, 'bookingpage.html', context)
 
+def PetprofilePage(request):
+    if request.method == 'POST':
+        form = PetForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'account has been updated')
+            return redirect('petprofile')
+    else:
+        form = PetForm()
+
+    context = {'form':form}
+    return render(request, 'petprofile.html', context)
+
+
 def profilePage(request):
-    context = {}
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        o_form = OwnerUpdateForm(request.POST, request.FILES, instance=request.user.owner)
+        if u_form.is_valid() and o_form.is_valid():
+            u_form.save()
+            o_form.save()
+            messages.success(request, f'account has been updated')
+            return redirect('profile')
+    else: 
+        u_form = UserUpdateForm(instance=request.user)
+        o_form = OwnerUpdateForm(instance=request.user.owner)
+    
+
+    context = {
+        'u_form' : u_form,
+        'o_form' : o_form,
+    }
+    
     return render(request, 'profile.html', context)
 
 def registerPage(request):
