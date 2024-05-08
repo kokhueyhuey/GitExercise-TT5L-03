@@ -294,45 +294,7 @@
         <input type="submit" value="Book" style="display: block; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
     </form>
 
-    <div id="bookingDetails">
-        <h2>Booking Details</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Service</th>
-                    <th>Time Slot</th>
-                    <th>Number of Pets</th> <!-- Added column header for number of pets -->
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody id="bookingTableBody">
-            </tbody>
-        </table>
-    </div>
-
-    <script>
-        function bookService() {
-            var service = document.getElementById("service").value;
-            var timeSlot = document.getElementById("timeSlot").value;
-            var numPets = document.getElementById("numPets").value;
-            var date = document.getElementById("date").value;
-            
-            // Create a new table row
-            var newRow = document.createElement("tr");
-
-            // Insert service, time slot, number of pets, and date into the table row
-            newRow.innerHTML = "<td>" + service + "</td><td>" + timeSlot + "</td><td>" + numPets + "</td><td>" + date + "</td>";
-
-            // Append the new row to the table body
-            document.getElementById("bookingTableBody").appendChild(newRow);
-
-            // Show the booking details section
-            document.getElementById("bookingDetails").style.display = "block";
-
-            // Prevent form submission
-            return false;
-        }
-    </script>
+   
      </section>
      <img src="">
      <section id="contact" class="contact">
