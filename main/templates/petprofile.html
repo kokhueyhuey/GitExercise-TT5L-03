@@ -11,13 +11,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    .bigcontainer{
-        max-width: 900px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: aqua;
-        border-radius: 8px;
-    }
     h1 {
         text-align: center;
     }
@@ -67,34 +60,44 @@
         }
 
 </style>
-<!-- <a href="{% url 'petprofile' %}">Pet Profile</a> -->
+<!-- <a href="{% url 'profile' %}">Owner Profile</a> -->
 
-    <div class="">
-        <h1>Profile</h1>
+    <!-- <div class=""> -->
+        <h1>PetProfile</h1>
         <!-- <p> {{ user.username }} </p>  -->
         <!-- <p> {{ user.email }} </p> -->
-        <form method="POST" action="">
-            {% csrf_token %}
-            <div class="container">
-                <div class=" form-group">
-                    <label for="id_username">Name:</label>
-                    {{ u_form.username }}
-                </div>
-                <div class=" form-group">
-                    <label for="id_email">Email:</label>
-                    {{ u_form.email }}
-                </div>
-                <div class=" form-group">
-                    <label for="id_phonenum">PhoneNumber:</label>
-                    {{ o_form.phone_number }}
-                </div>
-                {% for message in messages %}
-                    <p id="messages">{{ message }}</p>
-                {% endfor %}
-            </div>
-            <div class="button-container">
-                <input type="submit" value="Save Profile">
-            </div>
-        </form>
     </div>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="container">
+            <div class=" form-group">
+                <label for="id_username">Name:</label>
+                {{ form.name }}
+            </div>
+            <div class=" form-group">
+                <label for="id_email">Breed:</label>
+                {{ form.breed }}
+            </div>
+            <div class=" form-group">
+                <label for="id_phonenum">Ages:</label>
+                {{ form.age }}
+            </div>
+            <div class=" form-group">
+                <label for="id_email">Owner:</label>
+                {{ form.owner }}
+            </div>
+            <div class=" form-group">
+                <label for="id_phonenum">Species:</label>
+                {{ form.species }}
+            </div>
+
+            {% for message in messages %}
+                <p id="messages">{{ message }}</p>
+            {% endfor %}
+        </div>
+        <div class="button-container">
+            <input type="submit" value="Save Profile">
+        </div>
+    </form>
 {% endblock %}
