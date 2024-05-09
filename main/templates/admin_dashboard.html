@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .menu {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .menu ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        table {
+            margin: 10px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .dash {
+            color: black ;
+            font-size: 25px;
+        }
+        .dashb {
+            position: center;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="dashb">Admin Dashboard</h1>
+    <h2 class="dash">Customer bookings</h2>
+    
+    <ul>
+        {% for bookings in admin_dashboard %}
+        <li>{{ booking.customer_name }}</li>
+        <li>{{ booking.date }}</li>
+        <li>{{ booking.time }}</li>
+        <li>{{ booking.description }}</li>
+        {% endfor %}
+    </ul>
+  
+    <!-- <table>
+        <tr>
+          <th>Customer name</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Description</th>
+        </tr>
+        {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.customer_name }}</td>
+          <td>{{ booking.date }}</td>
+          <td>{{ booking.time }}</td>
+          <td>{{ booking.description }}</td>
+        </tr>
+        {% endfor %}
+      </table> -->
+
+
+    <div style="margin-top: 70px; margin-bottom: 70px;">
+        <h2 class="dash">Customer contacts</h2>
+        <!-- {% for owner in owners %}
+            <li>Name: {{ owner.user }}, Email: {{ owner.email }}</li>
+        {% endfor %}     -->
+            <!-- <ul>
+            {% for owner in admin_dashboard %}
+            <li>{{ owner.user }}</li>
+            <li>{{ owner.email }}</li>
+            <li>{{ owner.phone_number }}</li>
+            {% endfor %}
+        </ul> -->
+        <table>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Contact no.</th>
+            </tr>
+            {% for owner in owners %}
+            <tr>
+              <td>{{ owner.user }}</td>
+              <td>{{ owner.email }}</td>
+              <td>{{ owner.phone_number }}</td>
+            </tr>
+            {% endfor %}
+          </table>
+    </div>
+
+
+</body>
+</html>
+{% endblock %}

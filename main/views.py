@@ -9,6 +9,11 @@ from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm
 from .models import Pet, Owner
 # Create your views here.
+def AdminPage(request):
+    owners = Owner.objects.all()
+    context = { 'owners': owners}
+    return render(request, 'admin_dashboard.html', context)
+
 
 def BookingPage(request):
 
