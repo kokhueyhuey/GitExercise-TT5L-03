@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm
-
+from .models import Pet, Owner
 # Create your views here.
 
 def BookingPage(request):
@@ -16,14 +16,30 @@ def BookingPage(request):
     return render(request, 'bookingpage.html', context)
 
 def PetprofilePage(request):
+    try:
+        owner_instance = Owner.objects.get(user=request.user)
+    except Owner.DoesNotExist:
+        messages.error(request, 'pls create a owner profile first')
+        return redirect ('profile')
+    
+    pet_instances = Pet.objects.filter(owner=owner_instance)
+
+    if not pet_instances:
+        pet_instance = None
+    else:
+        pet_instance = pet_instances.first()
+
     if request.method == 'POST':
-        form = PetForm(request.POST)
+        form = PetForm(request.POST, instance=pet_instance)
         if form.is_valid():
-            form.save()
-            messages.success(request, f'account has been updated')
+            pet = form.save(commit=False)
+            pet.owner = owner_instance
+            pet.save()
+            # form.save()
+            messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
-        form = PetForm()
+        form = PetForm(instance=pet_instance)
 
     context = {'form':form}
     return render(request, 'petprofile.html', context)
@@ -36,7 +52,7 @@ def profilePage(request):
         if u_form.is_valid() and o_form.is_valid():
             u_form.save()
             o_form.save()
-            messages.success(request, f'account has been updated')
+            messages.success(request, f'profile has been updated')
             return redirect('profile')
     else: 
         u_form = UserUpdateForm(instance=request.user)

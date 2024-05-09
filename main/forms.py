@@ -22,4 +22,4 @@ class OwnerUpdateForm(forms.ModelForm):
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = ['name','owner','age','species','breed']
+        fields = ['name','age','species','breed']
