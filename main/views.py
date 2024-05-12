@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate, login ,logout
 
 from django.contrib import messages
 from django import forms
-from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm
-from .models import Pet, Owner
+from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
+from .models import Pet, Owner, Booking
 # Create your views here.
 def AdminPage(request):
     owners = Owner.objects.all()
@@ -16,8 +16,19 @@ def AdminPage(request):
 
 
 def BookingPage(request):
+    if request.method == 'POST':
+        form = BookingForm(request.user.owner, request.POST)
+        print(form.errors)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.owner = request.user.owner
+            booking.save()
+            messages.success(request, f'booking has been updated')
+            return redirect('bookingpage')
+    else:
+        form = BookingForm(request.user.owner)
 
-    context = {}
+    context = {'form': form }
     return render(request, 'bookingpage.html', context)
 
 def PetprofilePage(request):

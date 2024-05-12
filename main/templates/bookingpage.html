@@ -1,121 +1,112 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <style>
-    #bookingDetails {
-        display: none;
+    .container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .bigcontainer{
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: aqua;
+        border-radius: 8px;
+    }
+    h1 {
+        text-align: center;
+    }
+
+    form {
         margin-top: 20px;
     }
 
-    #bookingDetails h2 {
-        margin-bottom: 10px;
-        color: black; /* Change the color of "Booking Details" to black */
+    form .form-group {
+        margin-bottom: 15px;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    form label {
+        display: block;
+        font-weight: bold;
+        
     }
 
-    th, td {
-        padding: 12px; /* Increase spacing between table cells */
-        text-align: left;
-        border-bottom: 1px solid #ddd;
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="date"],
+    form input[type="time"],
+    #id_pet,
+    #id_service {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
 
-    th {
-        background-color: #f2f2f2;
+    form input[type="submit"] {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
     }
 
-    /* CSS for selection lists */
-    select {
-        width: 50%; /* Adjust the width of the selection list */
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9; /* Apply background color */
+    .button-container {
+        padding-left: 23%;
     }
+
+    #messages {
+            background-color: grey;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+			border-radius: 5px;
+        }
 
 </style>
-    <title>Pet Service Booking</title>
-<body>
-    <h1>Book Pet Services</h1>
+<!-- <a href="{% url 'petprofile' %}">Pet Profile</a> -->
 
-    <form id="bookingForm" method="POST" action="#" onsubmit="return bookService()">
-        <label>Select Service:</label>
-        <select id="service" name="service" style="width: 500px" > <!-- Adjust the width of the service selection list -->
-            <option value="pet_grooming">Pet Grooming - MYR100</option>
-            <option value="pet_hotel">Pet Hotel - MYR100/day</option>
-            <option value="pet_daycare">Pet Daycare - MYR100/day</option>
-            <option value="nail_trimming">Nail Trimming - MYR100/day</option>
-        </select>
-        <br>
-        <br>
-        <label>Select Time Slot:</label>
-        <select id="timeSlot" name="timeSlot" style="width: 30%;"> <!-- Adjust the width of the time slot selection list -->
-            <option value="morning">Morning</option>
-            <option value="afternoon">Afternoon</option>
-            <option value="evening">Evening</option>
-        </select>
-        <br>
-        <br>
-        <label>Select Number of Pets:</label>
-        <select id="numPets" name="numPets" style="width: 30%;"> <!-- Adjust the width of the amount selection list -->
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-        </select>
-        <br>
-        <br>
-        <label for="date">Select Date:</label>
-        <input type="date" id="date" name="date" style="display: block; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
-        <br>
-        <input type="submit" value="Book" style="display: block; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    </form>
-
-    <div id="bookingDetails">
-        <h2>Booking Details</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Service</th>
-                    <th>Time Slot</th>
-                    <th>Number of Pets</th> <!-- Added column header for number of pets -->
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody id="bookingTableBody">
-            </tbody>
-        </table>
+    <div class="">
+        <h1>Booking </h1>
+        <!-- <p> {{ user.username }} </p>  -->
+        <!-- <p> {{ user.email }} </p> -->
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="container">
+                <div class="form-group">
+                    <label for="id_pet">Pet:</label>
+                    {{ form.pet }}
+                </div>
+                <div class="form-group">
+                    <label for="id_date">Date:
+                    {{ form.date }}
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="id_time">Time:
+                    {{ form.time }}
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="id_service">Service:</label>
+                    {{ form.service }}
+                </div>
+                {% for message in messages %}
+                    <p id="messages">{{ message }}</p>
+                {% endfor %}
+            </div>
+            <div class="button-container">
+                <input type="submit" value="Save Booking">
+            </div>
+        </form>
     </div>
-
-    <script>
-        function bookService() {
-            var service = document.getElementById("service").value;
-            var timeSlot = document.getElementById("timeSlot").value;
-            var numPets = document.getElementById("numPets").value;
-            var date = document.getElementById("date").value;
-            
-            // Create a new table row
-            var newRow = document.createElement("tr");
-
-            // Insert service, time slot, number of pets, and date into the table row
-            newRow.innerHTML = "<td>" + service + "</td><td>" + timeSlot + "</td><td>" + numPets + "</td><td>" + date + "</td>";
-
-            // Append the new row to the table body
-            document.getElementById("bookingTableBody").appendChild(newRow);
-
-            // Show the booking details section
-            document.getElementById("bookingDetails").style.display = "block";
-
-            // Prevent form submission
-            return false;
-        }
-    </script>
-     </section>
-     <img src="">
-</body>
-</html>
 {% endblock %}
