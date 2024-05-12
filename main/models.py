@@ -31,12 +31,19 @@ class Booking(models.Model):
     pet = models.ForeignKey(Pet, null=True, on_delete=models.CASCADE)
     date = models.DateField(blank=False)
     time = models.TimeField(blank=False)
-    SERVICE_CHOICES = (
-        ('grooming', 'grooming'),
-        ('boarding', 'boarding'),
-        # Add more services as needed
-    )
+    SERVICE_CHOICES = [
+        ('Hair Grooming', 'Hair Grooming'),
+        ('Bath and Dry', 'Bath and Dry'),
+        ('Pet Hotel', 'Pet Hotel'),
+        ('Pet Daycare', 'Pet Daycare'),
+    ]
     service = models.CharField(max_length=50, choices=SERVICE_CHOICES)
+    STATUS_CHOICES = [
+        ('Ongoing', 'Ongoing'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Ongoing')
 
     def __str__(self):
         return f'{self.owner.user.username} - {self.date} {self.time}'         
