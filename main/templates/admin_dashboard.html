@@ -129,7 +129,7 @@
 </head>
 <body>
     <h1 class="dashb">Admin Dashboard</h1>
-    <div style="margin-top: 70px; margin-bottom: 70px;">
+    <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Customer bookings</h2>
 <form method="GET" action="" class="sorting-form">
     <label for="sort_by">Sort By:</label>
@@ -145,10 +145,10 @@
         <tr>
             <th>Booking ID</th>
             <th>Customer name</th>
+            <th>Pet name</th>
             <th>Date</th>
             <th>Time</th>
             <th>Service</th>
-            <th>No. of Pets</th>
             <th>Status</th>
             <th>Action</th>
         </tr>
@@ -157,11 +157,52 @@
         {% for booking in ongoing_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td>{{ booking.owner }}</td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
-            <td>{{ booking.number_of_pets }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+                <form method="post" action="{% url 'edit_booking' booking.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Edit Booking</button>
+                </form>
+                <form method="get" action="{% url 'change_status' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Change Status</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+<div style="margin-top: 70px; margin-bottom: 70px;">
+<h2 class="dash">Completed Bookings</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Customer name</th>
+            <th>Pet name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in completed_bookings %}
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.time }}</td>
+            <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
                 <form action="{% url 'edit_booking' booking.id %}" method="post" style="display: inline;">
@@ -177,48 +218,47 @@
         {% endfor %}
     </tbody>
 </table>
-    </div>
 
 <div style="margin-top: 70px; margin-bottom: 70px;">
-    <h2 class="dash">Completed Bookings</h2>
+    <h2 class="dash">Cancelled Bookings</h2>
     <table>
-        <thead>
-            <tr>
-                <th>Booking ID</th>
-                <th>Customer name</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Service</th>
-                <th>No. of Pets</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-            <tbody>
-                {% for booking in completed_bookings %}
-                <tr>
-                    <td>{{ booking.id }}</td>
-                    <td>{{ booking.owner }}</td>
-                    <td>{{ booking.date }}</td>
-                    <td>{{ booking.time }}</td>
-                    <td>{{ booking.service }}</td>
-                    <td>{{ booking.number_of_pets }}</td>
-                    <td>{{ booking.status }}</td>
-                    <td>
-                        <form action="{% url 'edit_booking' booking.id %}" method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="button">Edit Booking</button>
-                        </form>
-                        <form method="get" action="{% url 'change_status' booking.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="button">Change Status</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Customer name</th>
+            <th>Pet name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in cancelled_bookings %}
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.time }}</td>
+            <td>{{ booking.service }}</td>
+            <td>{{ booking.status }}</td>
+            <td>
+                <form action="{% url 'edit_booking' booking.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Edit Booking</button>
+                </form>
+                <form method="get" action="{% url 'change_status' booking.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Change Status</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
 
 </body>
 </html>

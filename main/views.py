@@ -16,12 +16,18 @@ def AdminPage(request):
     if sort_by == 'date':
         ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('-date')
         completed_bookings = Booking.objects.filter(status='Completed').order_by('-date')
+        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('-date')
     elif sort_by == 'id':
         ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('id')
         completed_bookings = Booking.objects.filter(status='Completed').order_by('id')
+        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('id')
   
     owners = Owner.objects.all()
-    context = {'ongoing_bookings': ongoing_bookings, 'completed_bookings': completed_bookings, 'owners': owners}
+    context = {'ongoing_bookings': ongoing_bookings, 
+               'completed_bookings': completed_bookings,  
+               'cancelled_bookings': cancelled_bookings,
+               'owners': owners,
+              }
     return render(request, 'admin_dashboard.html', context)
 
 
@@ -41,7 +47,29 @@ def BookingPage(request):
     context = {'form': form }
     return render(request, 'bookingpage.html', context)
 
+def edit_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    owner = booking.owner  # Retrieve the owner associated with the booking
+    if request.method == 'POST':
+        form = BookingForm(owner, request.POST, instance=booking)
+        if form.is_valid():
+            form.save()  
+            return redirect('admin_dashboard')  
+    else:
+        form = BookingForm(owner, instance=booking)  
+    return render(request, 'edit_booking.html', {'form': form, 'booking': booking})
 
+
+def change_status(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        booking.status = new_status
+        booking.save()
+        return redirect('admin_dashboard')
+    
+    return render(request, 'change_status.html', {'booking': booking})
 
 
 def PetprofilePage(request):

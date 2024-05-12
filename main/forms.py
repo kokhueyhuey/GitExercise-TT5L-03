@@ -25,9 +25,6 @@ class PetForm(forms.ModelForm):
         fields = ['name','age','species','breed']
 
 class BookingForm(forms.ModelForm):
-    def __init__(self, owner, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['pet'].queryset = owner.pet_set.all()
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
         ('Bath and Dry', 'Bath and Dry'),
@@ -35,10 +32,15 @@ class BookingForm(forms.ModelForm):
         ('Pet Daycare', 'Pet Daycare'),
     ]
     service = forms.ChoiceField(choices=SERVICE_CHOICES)
+
     class Meta:
         model = Booking
-        fields = ['pet','date','time','service',]
+        fields = ['owner','pet', 'date', 'time', 'service']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def __init__(self, owner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pet'].queryset = owner.pet_set.all()

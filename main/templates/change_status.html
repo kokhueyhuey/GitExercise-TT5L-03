@@ -7,12 +7,9 @@
             font-family: "Quicksand", sans-serif;
             background-color: #F9F2EB;
             margin: 0;
-            padding: 20px;
             box-sizing: border-box;
            
         }
-
-
         .container {
             max-width: 800px;
             margin: 20px auto;
@@ -29,7 +26,6 @@
         }
 
         p {
-            color: black;
             margin-bottom: 15px;
         }
 
@@ -74,7 +70,7 @@
     <p>Date: {{ booking.date }}</p>
     <p>Time: {{ booking.time }}</p>
     <p>Service: {{ booking.service }}</p>
-    <p>No. of Pets: {{ booking.number_of_pets }}</p>
+    <p>Pet: {{ booking.pet }}</p>
     <form method="post">
         {% csrf_token %}
         <input type="hidden" name="status" value="Completed">  <!-- Set the status to 'Completed' -->
@@ -84,6 +80,11 @@
         {% csrf_token %}
         <input type="hidden" name="status" value="Ongoing">
         <button type="submit">Change Status to Ongoing</button>
+    </form>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="Cancelled">
+        <button type="submit">Cancel booking</button>
     </form>
 </div>
 </body>
