@@ -20,6 +20,11 @@ def AdminPage(request):
         ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('id')
         completed_bookings = Booking.objects.filter(status='Completed').order_by('id')
         cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('id')
+    elif sort_by == 'service':
+        ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('service')
+        completed_bookings = Booking.objects.filter(status='Completed').order_by('service')
+        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('service')
+
   
     owners = Owner.objects.all()
     context = {'ongoing_bookings': ongoing_bookings, 
