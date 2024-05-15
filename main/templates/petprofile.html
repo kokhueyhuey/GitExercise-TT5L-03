@@ -59,7 +59,37 @@
             text-align: center;
 			border-radius: 5px;
         }
+    table {
+        margin: auto;
+        width: 50%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        background-color: white;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
 
+    .button {
+            background-color: rgb(102, 58, 60);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px; 
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: grey;
+        }
 
 </style>
 <!-- <a href="{% url 'profile' %}">Owner Profile</a> -->
@@ -69,7 +99,38 @@
         <!-- <p> {{ user.username }} </p>  -->
         <!-- <p> {{ user.email }} </p> -->
     </div>
-
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Species</th>
+            <th>Breed</th>
+            <th>Action</th>
+            <!-- Add more table headers as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for pet_instance in pet_instances %}
+            <tr>
+                <td>{{ pet_instance.name }}</td>
+                <td>{{ pet_instance.age }}</td>
+                <td>{{ pet_instance.species }}</td>
+                <td>{{ pet_instance.breed }}</td>
+                <td>
+                    <form method="post" action="{% url 'edit_pet' pet_instance.id  %}" >
+                        {% csrf_token %}
+                        <button type="submit" class="button">Edit Pet</button>
+                    </form>                    
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No pet profiles found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>    
     <form method="POST" action="">
         {% csrf_token %}
         <div class="container">
@@ -82,16 +143,16 @@
                 {{ form.name }}
             </div>
             <div class=" form-group">
-                <label for="id_breed">Breed:</label>
-                {{ form.breed }}
-            </div>
-            <div class=" form-group">
-                <label for="id_age">Ages:</label>
+                <label for="id_breed">Age:</label>
                 {{ form.age }}
             </div>
             <div class=" form-group">
-                <label for="id_species">Species:</label>
+                <label for="id_age">Species:</label>
                 {{ form.species }}
+            </div>
+            <div class=" form-group">
+                <label for="id_species">Breed:</label>
+                {{ form.breed }}
             </div>
 
             {% for message in messages %}
@@ -99,11 +160,8 @@
             {% endfor %}
         </div>
         <div class="button-container">
-            <input type="submit" value="Save Profile">
+            <input type="submit" value="Create Profile">
         </div>
-        <div class="button-container">
-            <input type="submit" value="Add Pet">
-        </div>
+        
     </form>
-
 {% endblock %}

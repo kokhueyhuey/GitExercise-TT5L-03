@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -8,11 +8,7 @@ from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking
-from django.shortcuts import render, redirect, get_object_or_404
-from .decorators import admin_only
-from django.contrib.auth.models import Group
 
-@admin_only
 def AdminPage(request):
     sort_by = request.GET.get('sort_by', 'date')
 
@@ -42,6 +38,7 @@ def BookingPage(request):
             booking = form.save(commit=False)
             booking.owner = request.user.owner
             booking.save()
+            form.save_m2m()
             messages.success(request, f'booking has been updated')
             return redirect('bookingpage')
     else:
@@ -52,17 +49,17 @@ def BookingPage(request):
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    owner = booking.owner  # Retrieve the owner associated with the booking
+    owner = booking.owner
+    owner_pets = Pet.objects.filter(owner=owner)
+    print(owner_pets)  # Retrieve the owner associated with the booking
     if request.method == 'POST':
-        form = BookingForm(owner, request.POST, instance=booking)
-        print(form.errors)
+        form = BookingForm(owner,request.POST, instance=booking)
         if form.is_valid():
             form.save()  
             return redirect('admin_dashboard')  
     else:
-        form = BookingForm(owner, instance=booking)  
-    return render(request, 'edit_booking.html', {'form': form, 'booking': booking})
-
+        form = BookingForm(owner,instance=booking)  
+    return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
 
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
@@ -95,16 +92,13 @@ def PetprofilePage(request):
     except Owner.DoesNotExist:
         messages.error(request, 'pls create a owner profile first')
         return redirect ('profile')
-    
     pet_instances = Pet.objects.filter(owner=owner_instance)
-
-    if not pet_instances:
-        pet_instance = None
-    else:
-        pet_instance = pet_instances.first()
-
+    # if not pet_instances:
+    #     pet_instance = None
+    # else:
+    #     pet_instance = pet_instances.first()
     if request.method == 'POST':
-        form = PetForm(request.POST, instance=pet_instance)
+        form = PetForm(request.POST)
         if form.is_valid():
             pet = form.save(commit=False)
             pet.owner = owner_instance
@@ -113,11 +107,35 @@ def PetprofilePage(request):
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
-        form = PetForm(instance=pet_instance)
+        form = PetForm()
 
-    context = {'form':form}
+    context = {'form':form, 'pet_instances': pet_instances}
     return render(request, 'petprofile.html', context)
 
+def edit_pet(request, pet_id):
+    pet_instance = get_object_or_404(Pet, id=pet_id)
+    print(pet_instance)
+    if request.method == 'POST':
+        form = PetForm(request.POST, instance=pet_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('petprofile')
+        
+    else:
+        form = PetForm(initial={
+            'name': pet_instance.name,
+            'owner': pet_instance.owner,
+            'age': pet_instance.age,
+            'species': pet_instance.species,
+            'breed': pet_instance.breed
+        })
+
+    context = {
+        'form': form, 
+        'pet_instance': pet_instance
+    }
+    return render(request, 'edit_pet.html', context)
+        
 
 def profilePage(request):
     if request.method == 'POST':
@@ -149,8 +167,9 @@ def registerPage(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
+                user = form.save()
+                username = form.cleaned_data.get('username')
+                
 
                 messages.success(request,'Account was successfully created!')
 
@@ -186,8 +205,3 @@ def logoutUser(request):
 def home(request):
     context={}
     return render(request, "home.html", context)
-
-
-
-
-

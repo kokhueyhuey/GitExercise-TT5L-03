@@ -125,18 +125,6 @@
         .button:hover {
             background-color: grey;
         }
-        .action-buttons {
-             display: flex;
-        }
-
-        .action-buttons form {
-            margin-right: 10px;
-        }
-        .button-container {
-             display: inline-block;
-        }
-
-
     </style>
 </head>
 <body>
@@ -188,7 +176,6 @@
                     {% csrf_token %}
                     <button type="submit" class="button">Change Status</button>
                 </form>
-
             </td>
         </tr>
         {% endfor %}
@@ -205,9 +192,7 @@
             <th>Customer name</th>
             <th>Pet name</th>
             <th>Date</th>
-            <th>Time</th>            
-            <th>Checkin</th>
-            <th>Checkout</th>
+            <th>Time</th>
             <th>Service</th>
             <th>Status</th>
             <th>Action</th>
@@ -235,10 +220,6 @@
                 <form method="get" action="{% url 'change_status' booking.id %}">
                     {% csrf_token %}
                     <button type="submit" class="button">Change Status</button>
-                </form>
-                <form method="get" action="{% url 'adprofile' booking.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="button">Show profile</button>
                 </form>
             </td>
         </tr>
@@ -271,6 +252,7 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>
+            </td>            
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
