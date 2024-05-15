@@ -9,10 +9,7 @@ from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking
 from django.shortcuts import render, redirect, get_object_or_404
-from .decorators import admin_only
-from django.contrib.auth.models import Group
 
-@admin_only
 def AdminPage(request):
     sort_by = request.GET.get('sort_by', 'date')
 
@@ -55,7 +52,6 @@ def edit_booking(request, booking_id):
     owner = booking.owner  # Retrieve the owner associated with the booking
     if request.method == 'POST':
         form = BookingForm(owner, request.POST, instance=booking)
-        print(form.errors)
         if form.is_valid():
             form.save()  
             return redirect('admin_dashboard')  
@@ -74,19 +70,6 @@ def change_status(request, booking_id):
         return redirect('admin_dashboard')
     
     return render(request, 'change_status.html', {'booking': booking})
-
-
-from django.shortcuts import render, get_object_or_404
-from .models import Booking
-
-def ownerpf(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'admin_showprofile.html', {'booking': booking})
-
-def petpf(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'admin_petprofile.html', {'booking': booking})
-
 
 
 def PetprofilePage(request):
@@ -186,8 +169,3 @@ def logoutUser(request):
 def home(request):
     context={}
     return render(request, "home.html", context)
-
-
-
-
-

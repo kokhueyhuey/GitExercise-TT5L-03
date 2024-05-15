@@ -3,50 +3,23 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Booking</title>
     <style>
         body {
-            font-family: "Quicksand", sans-serif;
+            font-family:"Quicksand", sans-serif;
             background-color: #F9F2EB;
             margin: 0;
             padding: 0;
-            /* Center the content horizontally */
-        }
-        .container-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            margin-top: 20px;
         }
         .container {
-            width: 500px; /* Specify width for each container */
-            margin-right: 20px;
+            max-width: 600px;
+            margin: 50px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .container1 {
-            width: 400px; /* Specify width for each container */
-            margin-right: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
         h1 {
-            margin-bottom: 30px;
-            text-align: center; 
-        }
-        .details {
-            margin-bottom: 20px;
-            text-align: center; 
-            color: black;
-            font-size: x-large;
+            text-align: center;
         }
         form {
             margin-top: 20px;
@@ -97,24 +70,16 @@
             background-color: grey;
         }
     </style>
-</head>
-<body>
-    <h1>Edit Booking</h1>
-
-    <div class="container-wrapper">
-        <div class="container1">
-            <h2 class="details">Booking details</h2>
-            <p>Booking ID: {{ booking.id }}</p>
-            <p>Customer name: {{ booking.owner }}</p>
-            <p>Date: {{ booking.date }}</p>
-            <p>Time: {{ booking.time }}</p>
-            <p>Service: {{ booking.service }}</p>
-            <p>Pet: {{ booking.pet }}</p>
-            {% csrf_token %}
-        </div>
     
+    </style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit Booking</title>
+    </head>
+    <body>
+        <h1>Edit Booking</h1>
         <div class="container">
-            <h2 class="details">Update Booking details</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
@@ -123,12 +88,12 @@
                 </div>
                 <div class="form-group">
                     <label for="id_date">Date:
-                        {{ form.date }}
+                    {{ form.date }}
                     </label>
                 </div>
                 <div class="form-group">
                     <label for="id_time">Time:
-                        {{ form.time }}
+                    {{ form.time }}
                     </label>
                 </div>
                 <div class="form-group">
@@ -144,9 +109,6 @@
                 </div>
             </form>
         </div>
-    </div>
-
-</body>
-</html>
+    </body>
+    </html>
 {% endblock %}
-

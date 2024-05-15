@@ -35,7 +35,7 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ['pet', 'date', 'time', 'service']
+        fields = ['owner','pet', 'date', 'time', 'service']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
