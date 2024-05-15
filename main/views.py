@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
@@ -8,7 +8,6 @@ from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking
-from django.shortcuts import render, redirect, get_object_or_404
 
 def AdminPage(request):
     sort_by = request.GET.get('sort_by', 'date')
@@ -50,7 +49,9 @@ def BookingPage(request):
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    owner = booking.owner  # Retrieve the owner associated with the booking
+    owner = booking.owner
+    owner_pets = Pet.objects.filter(owner=owner)
+    print(owner_pets)  # Retrieve the owner associated with the booking
     if request.method == 'POST':
         form = BookingForm(owner,request.POST, instance=booking)
         if form.is_valid():
@@ -58,7 +59,7 @@ def edit_booking(request, booking_id):
             return redirect('admin_dashboard')  
     else:
         form = BookingForm(owner,instance=booking)  
-    return render(request, 'edit_booking.html', {'form': form, 'booking': booking})
+    return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
 
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
@@ -99,7 +100,8 @@ def PetprofilePage(request):
     return render(request, 'petprofile.html', context)
 
 def edit_pet(request, pet_id):
-    pet_instance = get_object_or_404(Pet, id =pet_id )
+    pet_instance = get_object_or_404(Pet, id=pet_id)
+    print(pet_instance)
     if request.method == 'POST':
         form = PetForm(request.POST, instance=pet_instance)
         if form.is_valid():
@@ -107,9 +109,18 @@ def edit_pet(request, pet_id):
             return redirect('petprofile')
         
     else:
-        form = PetForm(instance=pet_instance)
+        form = PetForm(initial={
+            'name': pet_instance.name,
+            'owner': pet_instance.owner,
+            'age': pet_instance.age,
+            'species': pet_instance.species,
+            'breed': pet_instance.breed
+        })
 
-    context = {'form': form, 'pet_instance': pet_instance}
+    context = {
+        'form': form, 
+        'pet_instance': pet_instance
+    }
     return render(request, 'edit_pet.html', context)
         
 

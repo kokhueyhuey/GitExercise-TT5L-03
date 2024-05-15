@@ -36,7 +36,7 @@
       border-radius: 4px;
       box-sizing: border-box;
     }
-    form input[type="submit"] {
+    form button[type="submit"] {
       background-color: #007bff;
       color: #fff;
       padding: 10px 20px;
@@ -47,7 +47,7 @@
     }
     
     .button-container {
-        padding-left: 23%;
+        padding-left: 2%;
     }
 </style>
 <h1>Edit Pet Profile</h1>
@@ -55,32 +55,29 @@
     <p>Breed: {{ pet_instance.breed }}</p>
     <p>Age: {{ pet_instance.age }}</p> -->
 
-    <form method="POST" action="">
+    <form method="post">
         {% csrf_token %}
         <div class="container">
             <div class=" form-group">
-                <label for="id_username">Name: {{ pet_instance.name }}</label>
-                {{ form.name }}
+                <label for="id_name">Name:</label>
+                <input type="text" id="id_name" name="name" value="{{ pet_instance.name }}">
             </div>
             <div class=" form-group">
-                <label for="id_breed">Breed: {{ pet_instance.age }}</label>
-                {{ form.age }}
+                <label for="id_age">Age:</label>
+                <input type="text" id="id_age" name="age" value="{{ pet_instance.age }}">
             </div>
             <div class=" form-group">
-                <label for="id_age">Ages: {{ pet_instance.species }}</label>
-                {{ form.species }}
+                <label for="id_species">Species:</label>
+                <input type="text" id="id_species" name="species" value="{{ pet_instance.species }}">
             </div>
             <div class=" form-group">
-                <label for="id_species">Species:{{ pet_instance.breed }}</label>
-                {{ form.breed }}
+                <label for="id_breed">Breed:</label>
+                <input type="text" id="id_breed" name="breed" value="{{ pet_instance.breed }}">
             </div>
 
-            {% for message in messages %}
-                <p id="messages">{{ message }}</p>
-            {% endfor %}
-        </div>
-        <div class="button-container">
-            <input type="submit" value="Edit Profile">
+            <div class="button-container">
+                <button type="submit">Save Changes</button>
+            </div>
         </div>
     </form>
 </body>
