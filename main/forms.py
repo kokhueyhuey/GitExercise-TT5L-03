@@ -35,7 +35,7 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ['owner','pet', 'date', 'time', 'service']
+        fields = ['pet', 'date', 'time', 'service']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
@@ -43,4 +43,4 @@ class BookingForm(forms.ModelForm):
 
     def __init__(self, owner, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['pet'].queryset = owner.pet_set.all()
+        self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
