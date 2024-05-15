@@ -83,9 +83,9 @@ def ownerpf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     return render(request, 'admin_showprofile.html', {'booking': booking})
 
-def petpf(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'admin_petprofile.html', {'booking': booking})
+# def petpf(request, booking_id):
+#     booking = get_object_or_404(Booking, id=booking_id)
+#     return render(request, 'admin_petprofile.html', {'booking': booking})
 
 
 

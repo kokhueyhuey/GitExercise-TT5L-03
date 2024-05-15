@@ -66,9 +66,12 @@
     <h1>Owner Profile</h1>
 <div class="container">
     <p>Owner: {{ booking.owner }}</p>
-    <p>Pet name: {{ booking.pet }}</p>
     <p>Phone no.: {{ booking.owner.phone_number }}</p>
     <p>Email: {{ booking.owner.email }}</p>
+    <p>Pet name: {{ booking.pet }}</p>
+    <p>Pet age: {{ booking.pet.age }}</p>
+    <p>Pet species: {{ booking.pet.species }}</p>
+    <p>Pet breed: {{ booking.pet.breed }}</p>
     {% csrf_token %}
     <a href="{% url 'admin_dashboard' %}"><button>Go Back</button></a>
 </div>

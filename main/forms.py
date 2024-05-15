@@ -43,4 +43,4 @@ class BookingForm(forms.ModelForm):
 
     def __init__(self, owner, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['pet'].queryset = owner.pet_set.all()
+        self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
