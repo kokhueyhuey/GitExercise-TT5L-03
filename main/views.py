@@ -38,7 +38,15 @@ def BookingPage(request):
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = request.user.owner
+
+            if booking.service in ['Pet Hotel', 'Pet Daycare']:
+                booking.date = None
+                booking.time = None
+            else:
+                booking.checkin = None
+                booking.checkout = None
             booking.save()
+            print(form.errors)
             form.save_m2m()
             messages.success(request, f'booking has been updated')
             return redirect('bookingpage')

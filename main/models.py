@@ -29,8 +29,8 @@ class Pet(models.Model):
 class Booking(models.Model):
     owner = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE)
     pet = models.ManyToManyField(Pet)
-    date = models.DateField(blank=False)
-    time = models.TimeField(blank=False)
+    date = models.DateField(blank=True, null=True)
+    time = models.TimeField(blank=True, null=True)
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
         ('Bath and Dry', 'Bath and Dry'),
@@ -46,4 +46,7 @@ class Booking(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Ongoing')
 
     def __str__(self):
-        return f'{self.owner.user.username} - {self.date} {self.time}'         
+        return f'{self.owner.user.username} - {self.date} {self.time}'      
+    
+    checkin = models.DateTimeField(null=True, blank=True)
+    checkout = models.DateTimeField(null=True, blank=True)   
