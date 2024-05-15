@@ -39,6 +39,7 @@ def BookingPage(request):
             booking = form.save(commit=False)
             booking.owner = request.user.owner
             booking.save()
+            form.save_m2m()
             messages.success(request, f'booking has been updated')
             return redirect('bookingpage')
     else:
@@ -51,14 +52,13 @@ def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     owner = booking.owner  # Retrieve the owner associated with the booking
     if request.method == 'POST':
-        form = BookingForm(owner, request.POST, instance=booking)
+        form = BookingForm(owner,request.POST, instance=booking)
         if form.is_valid():
             form.save()  
             return redirect('admin_dashboard')  
     else:
-        form = BookingForm(owner, instance=booking)  
+        form = BookingForm(owner,instance=booking)  
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking})
-
 
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
@@ -78,16 +78,13 @@ def PetprofilePage(request):
     except Owner.DoesNotExist:
         messages.error(request, 'pls create a owner profile first')
         return redirect ('profile')
-    
     pet_instances = Pet.objects.filter(owner=owner_instance)
-
-    if not pet_instances:
-        pet_instance = None
-    else:
-        pet_instance = pet_instances.first()
-
+    # if not pet_instances:
+    #     pet_instance = None
+    # else:
+    #     pet_instance = pet_instances.first()
     if request.method == 'POST':
-        form = PetForm(request.POST, instance=pet_instance)
+        form = PetForm(request.POST)
         if form.is_valid():
             pet = form.save(commit=False)
             pet.owner = owner_instance
@@ -96,11 +93,25 @@ def PetprofilePage(request):
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
-        form = PetForm(instance=pet_instance)
+        form = PetForm()
 
-    context = {'form':form}
+    context = {'form':form, 'pet_instances': pet_instances}
     return render(request, 'petprofile.html', context)
 
+def edit_pet(request, pet_id):
+    pet_instance = get_object_or_404(Pet, id =pet_id )
+    if request.method == 'POST':
+        form = PetForm(request.POST, instance=pet_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('petprofile')
+        
+    else:
+        form = PetForm(instance=pet_instance)
+
+    context = {'form': form, 'pet_instance': pet_instance}
+    return render(request, 'edit_pet.html', context)
+        
 
 def profilePage(request):
     if request.method == 'POST':
@@ -132,8 +143,11 @@ def registerPage(request):
         if request.method == 'POST':
             form = CreateUserForm(request.POST)
             if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
+                user = form.save()
+                username = form.cleaned_data.get('username')
+                
+                group = Group.objects.get(name='owner')
+                user.group.add(group)
 
                 messages.success(request,'Account was successfully created!')
 

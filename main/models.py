@@ -28,7 +28,7 @@ class Pet(models.Model):
     
 class Booking(models.Model):
     owner = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE)
-    pet = models.ForeignKey(Pet, null=True, on_delete=models.CASCADE)
+    pet = models.ManyToManyField(Pet)
     date = models.DateField(blank=False)
     time = models.TimeField(blank=False)
     SERVICE_CHOICES = [
