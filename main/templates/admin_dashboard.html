@@ -157,12 +157,12 @@
         {% for booking in ongoing_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td>{{ booking.owner.user.username }}</td>
+            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
             <td>
                 {% for pet in booking.pet.all %}
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
-            </td>            
+            </td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
@@ -202,12 +202,12 @@
         {% for booking in completed_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td>{{ booking.owner.user.username }}</td>
+            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
             <td>
                 {% for pet in booking.pet.all %}
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
-            </td>            
+            </td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
@@ -246,11 +246,12 @@
         {% for booking in cancelled_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td>{{ booking.owner.user.username }}</td>
+            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
             <td>
                 {% for pet in booking.pet.all %}
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
+            </td>
             </td>            
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>

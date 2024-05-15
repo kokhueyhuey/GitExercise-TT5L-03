@@ -20,7 +20,7 @@ class PetAdmin(admin.ModelAdmin):
 # admin.site.register(Booking)
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'owner', 'get_pets', 'date', 'time', 'service', 'status')
+    list_display = ('id','owner','get_pets','date','time','service', 'status')
 
     def get_pets(self, obj):
         return ", ".join([pet.name for pet in obj.pet.all()])

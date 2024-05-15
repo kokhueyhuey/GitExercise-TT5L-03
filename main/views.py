@@ -73,6 +73,19 @@ def change_status(request, booking_id):
     return render(request, 'change_status.html', {'booking': booking})
 
 
+from django.shortcuts import render, get_object_or_404
+from .models import Booking
+
+def ownerpf(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    return render(request, 'admin_showprofile.html', {'booking': booking})
+
+# def petpf(request, booking_id):
+#     booking = get_object_or_404(Booking, id=booking_id)
+#     return render(request, 'admin_petprofile.html', {'booking': booking})
+
+
+
 def PetprofilePage(request):
     try:
         owner_instance = Owner.objects.get(user=request.user)
@@ -157,8 +170,6 @@ def registerPage(request):
                 user = form.save()
                 username = form.cleaned_data.get('username')
                 
-                group = Group.objects.get(name='owner')
-                user.group.add(group)
 
                 messages.success(request,'Account was successfully created!')
 
