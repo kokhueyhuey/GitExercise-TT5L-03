@@ -148,6 +148,8 @@
             <th>Pet name</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Checkin</th>
+            <th>Checkout</th>
             <th>Service</th>
             <th>Status</th>
             <th>Action</th>
@@ -163,8 +165,10 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>            
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
+            <td>{{ booking.checkin|default:"-" }}</td>
+            <td>{{ booking.checkout|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
@@ -193,6 +197,8 @@
             <th>Pet name</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Checkin</th>
+            <th>Checkout</th>
             <th>Service</th>
             <th>Status</th>
             <th>Action</th>
@@ -208,8 +214,10 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>            
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
+            <td>{{ booking.checkin|default:"-" }}</td>
+            <td>{{ booking.checkout|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
@@ -237,6 +245,8 @@
             <th>Pet name</th>
             <th>Date</th>
             <th>Time</th>
+            <th>Checkin</th>
+            <th>Checkout</th>
             <th>Service</th>
             <th>Status</th>
             <th>Action</th>
@@ -252,8 +262,10 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>            
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
+            <td>{{ booking.checkin|default:"-" }}</td>
+            <td>{{ booking.checkout|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
@@ -268,6 +280,7 @@
             </td>
         </tr>
         {% endfor %}
+        
     </tbody>
 </table>
 </div>
