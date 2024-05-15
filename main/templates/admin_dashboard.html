@@ -85,7 +85,8 @@
         }
 
         .sort-button:hover {
-            background-color: grey;
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
         }
         table {
             margin: 10px;
@@ -93,20 +94,20 @@
             border-collapse: collapse;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid rgb(102, 58, 60);
             padding: 8px;
             text-align: left;
             background-color: white;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: rgb(255,223,203);
         }
         .dash {
             color: black ;
             font-size: 25px;
         }   
         .dashb {
-            text-align: center; /* Align text to the center */
+            text-align: center; 
         }
     
         .button {
@@ -123,7 +124,8 @@
             border-radius: 5px;
         }
         .button:hover {
-            background-color: grey;
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
         }
     </style>
 </head>
@@ -163,8 +165,8 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
@@ -208,8 +210,8 @@
                     {{ pet.name }}{% if not forloop.last %}, {% endif %}
                 {% endfor %}
             </td>
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
@@ -253,8 +255,8 @@
                 {% endfor %}
             </td>
             </td>            
-            <td>{{ booking.date }}</td>
-            <td>{{ booking.time }}</td>
+            <td>{{ booking.date|default:"-" }}</td>
+            <td>{{ booking.time|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>

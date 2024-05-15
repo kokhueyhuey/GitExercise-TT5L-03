@@ -108,5 +108,18 @@
                 <input type="submit" value="Save Booking">
             </div>
         </form>
+
+        {% if booking %}
+<div>
+    <h3>New Booking Information:</h3>
+    <p><strong>Owner:</strong> {{ booking.owner }}</p>
+    <p><strong>Date:</strong> {{ booking.date }}</p>
+    <p><strong>Time:</strong> {{ booking.time }}</p>
+    <p><strong>Service:</strong> {{ booking.service }}</p>
+    <p><strong>Status:</strong> {{ booking.status }}</p>
+    <!-- Add any other relevant details you want to display -->
+</div>
+        {% endif %}
+
     </div>
 {% endblock %}

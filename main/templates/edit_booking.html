@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: "Quicksand", sans-serif;
@@ -18,7 +19,7 @@
         .container-wrapper {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             margin-top: 20px;
         }
         .container {
@@ -30,7 +31,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .container1 {
-            width: 400px;
+            width: 400px; 
             margin-right: 20px;
             padding: 20px;
             background-color: #fff;
@@ -94,8 +95,12 @@
             border-radius: 5px;
         }
         .button:hover {
-            background-color: grey;
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
         }
+        /* .arrow {
+            margin: auto;
+        } */
     </style>
 </head>
 <body>
@@ -112,9 +117,12 @@
             <p>Pet: {{ booking.pet }}</p>
             {% csrf_token %}
         </div>
-    
+        <div class="arrow">
+        <i class="fas fa-arrow-right"></i>
+        </div>
+
         <div class="container">
-            <h2 class="details">Update Booking details</h2>
+            <h2 class="details">New Booking details</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">

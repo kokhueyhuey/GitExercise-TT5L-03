@@ -33,18 +33,21 @@ def AdminPage(request):
 def BookingPage(request):
     if request.method == 'POST':
         form = BookingForm(request.user.owner, request.POST)
-        print(form.errors)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = request.user.owner
             booking.save()
             form.save_m2m()
-            messages.success(request, f'booking has been updated')
-            return redirect('bookingpage')
+            messages.success(request, f'Booking has been updated')
+            # Pass the booking object to the template context
+            context = {'form': form, 'booking': booking}
+            return render(request, 'bookingpage.html', context)
+        else:
+            print(form.errors)
     else:
         form = BookingForm(request.user.owner)
 
-    context = {'form': form }
+    context = {'form': form}
     return render(request, 'bookingpage.html', context)
 
 def edit_booking(request, booking_id):
@@ -78,7 +81,9 @@ from .models import Booking
 
 def ownerpf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'admin_showprofile.html', {'booking': booking})
+    pets = booking.pet.all()
+    print(pets)  # Debug output
+    return render(request, 'admin_showprofile.html', {'booking': booking, 'pets': pets})
 
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
