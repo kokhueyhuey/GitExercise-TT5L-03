@@ -125,18 +125,6 @@
         .button:hover {
             background-color: grey;
         }
-        .action-buttons {
-             display: flex;
-        }
-
-        .action-buttons form {
-            margin-right: 10px;
-        }
-        .button-container {
-             display: inline-block;
-        }
-
-
     </style>
 </head>
 <body>
@@ -169,8 +157,8 @@
         {% for booking in ongoing_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
-            <td><a href="{% url 'petpf' booking.id %}">{{ booking.pet.name }}</a></td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
@@ -184,7 +172,6 @@
                     {% csrf_token %}
                     <button type="submit" class="button">Change Status</button>
                 </form>
-
             </td>
         </tr>
         {% endfor %}
@@ -201,9 +188,7 @@
             <th>Customer name</th>
             <th>Pet name</th>
             <th>Date</th>
-            <th>Time</th>            
-            <th>Checkin</th>
-            <th>Checkout</th>
+            <th>Time</th>
             <th>Service</th>
             <th>Status</th>
             <th>Action</th>
@@ -213,8 +198,8 @@
         {% for booking in completed_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
-            <td><a href="{% url 'petpf' booking.id %}">{{ booking.pet.name }}</a></td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
@@ -227,10 +212,6 @@
                 <form method="get" action="{% url 'change_status' booking.id %}">
                     {% csrf_token %}
                     <button type="submit" class="button">Change Status</button>
-                </form>
-                <form method="get" action="{% url 'adprofile' booking.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="button">Show profile</button>
                 </form>
             </td>
         </tr>
@@ -257,8 +238,8 @@
         {% for booking in cancelled_bookings %}
         <tr>
             <td>{{ booking.id }}</td>
-            <td><a href="{% url 'ownerpf' booking.id %}">{{ booking.owner.user.username }}</a></td>
-            <td><a href="{% url 'petpf' booking.id %}">{{ booking.pet.name }}</a></td>
+            <td>{{ booking.owner.user.username }}</td>
+            <td>{{ booking.pet.name }}</td>
             <td>{{ booking.date }}</td>
             <td>{{ booking.time }}</td>
             <td>{{ booking.service }}</td>
