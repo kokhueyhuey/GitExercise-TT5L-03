@@ -125,7 +125,19 @@
                 <a href="{% url 'customer_booking' %}" class="button">View Booking</a> 
             </div>
         </form>
-    </div>
+
+        <!-- {% for booking in bookings %}
+<div>
+    <h3>New Booking Information:</h3>
+    <p><strong>Owner:</strong> {{ booking.owner }}</p>
+    <p><strong>Date:</strong> {{ booking.date }}</p>
+    <p><strong>Time:</strong> {{ booking.time }}</p>
+    <p><strong>Service:</strong> {{ booking.service }}</p>
+    <p><strong>Status:</strong> {{ booking.status }}</p>
+</div>
+        {% endfor %}
+
+    </div> -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const serviceField = document.querySelector('select[name="service"]');
