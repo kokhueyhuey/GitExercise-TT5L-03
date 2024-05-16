@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login ,logout
 
 from django.contrib import messages
@@ -33,7 +34,6 @@ def AdminPage(request):
                'owners': owners,
               }
     return render(request, 'admin_dashboard.html', context)
-
 
 def BookingPage(request):
     owner = request.user.owner  # Get the owner instance related to the logged-in user
@@ -241,16 +241,13 @@ def home(request):
     context={}
     return render(request, "home.html", context)
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import Booking
-
-# @login_required
-# def customerbooking(request):
-#     owner = request.user.owner  # Get the owner instance related to the logged-in user
-#     bookings = Booking.objects.filter(owner=owner)  # Fetch bookings specific to the current owner
-
-#     context = {
-#         'bookings': bookings,
-#     }
-#     return render(request, 'bookingpage.html', context)
+@login_required
+def customer_booking(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner, )
+    
+    context = {
+        'bookings': bookings,
+    }
+    
+    return render(request, 'customer_booking.html', context)
