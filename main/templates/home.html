@@ -59,6 +59,40 @@
             position: sticky;
         }
 
+        h2 {
+            text-align: center;
+            color: #8B4513; /* Brown color for the heading */
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.7); /* Light brown color for the table background */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: none;
+            font-size: 16px;
+            color: #000; /* Black color for the text */
+        }
+
+        th {
+            background-color: #8B4513; /* Dark brown color for header cells */
+            text-transform: uppercase;
+            color: #FFF; /* White color for the text */
+        }
+
+        td {
+            background-color: #D2B48C; /* Light brown color for data cells */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
     </style>
 </head>
 <body>
@@ -105,6 +139,43 @@
                 <img src="{% static 'image/pethotel_img.jpeg' %}" alt="PetHotel" width="230" height="180">
             </div>
     </section>
+    <h2>Opening Hours</h2>
+
+    <table>
+        <tr>
+            <th>Day</th>
+            <th>Opening Hours</th>
+        </tr>
+        <tr>
+            <td>Monday</td>
+            <td>9:00 AM - 6:00 PM</td>
+        </tr>
+        <tr>
+            <td>Tuesday</td>
+            <td>9:00 AM - 6:00 PM</td>
+        </tr>
+        <tr>
+            <td>Wednesday</td>
+            <td>9:00 AM - 6:00 PM</td>
+        </tr>
+        <tr>
+            <td>Thursday</td>
+            <td>9:00 AM - 6:00 PM</td>
+        </tr>
+        <tr>
+            <td>Friday</td>
+            <td>9:00 AM - 6:00 PM</td>
+        </tr>
+        <tr>
+            <td>Saturday</td>
+            <td>10:00 AM - 4:00 PM</td>
+        </tr>
+        <tr>
+            <td>Sunday</td>
+            <td>Closed</td>
+        </tr>
+    </table>
+    
 </body>
 </html>
 
