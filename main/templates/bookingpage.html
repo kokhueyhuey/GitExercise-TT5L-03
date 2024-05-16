@@ -41,7 +41,9 @@
     form input[type="date"],
     form input[type="time"],
     #id_pet,
-    #id_service {
+    #id_service,
+    #id_checkin,
+    #id_checkout {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
@@ -71,6 +73,9 @@
             text-align: center;
 			border-radius: 5px;
         }
+    .hidden {
+        display: none;
+    }    
 
 </style>
 <!-- <a href="{% url 'petprofile' %}">Pet Profile</a> -->
@@ -87,19 +92,30 @@
                     {{ form.pet }}
                 </div>
                 <div class="form-group">
+                    <label for="id_service">Service:</label>
+                    {{ form.service }}
+                </div>
+                <div class="form-group" id ="date-field">
                     <label for="id_date">Date:
                     {{ form.date }}
                     </label>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="time-field">
                     <label for="id_time">Time:
                     {{ form.time }}
                     </label>
                 </div>
-                <div class="form-group">
-                    <label for="id_service">Service:</label>
-                    {{ form.service }}
+                <div class="form-group hidden" id="checkin-field">
+                    <label for="id_checkin">checkin:
+                    {{ form.checkin }}
+                    </label>
                 </div>
+                <div class="form-group hidden" id="checkout-field">
+                    <label for="id_checkout">checkout:
+                    {{ form.checkout }}
+                    </label>
+                </div>
+
                 {% for message in messages %}
                     <p id="messages">{{ message }}</p>
                 {% endfor %}
@@ -110,4 +126,30 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceField = document.querySelector('select[name="service"]');
+            const dateField = document.getElementById('date-field');
+            const timeField = document.getElementById('time-field');
+            const checkinField = document.getElementById('checkin-field');
+            const checkoutField = document.getElementById('checkout-field');
+
+            function toggleFields() {
+                if (serviceField.value === 'Pet Hotel' || serviceField.value === 'Pet Daycare') {
+                    dateField.classList.add('hidden');
+                    timeField.classList.add('hidden');
+                    checkinField.classList.remove('hidden');
+                    checkoutField.classList.remove('hidden');
+                } else {
+                    dateField.classList.remove('hidden');
+                    timeField.classList.remove('hidden');
+                    checkinField.classList.add('hidden');
+                    checkoutField.classList.add('hidden');
+                }
+            }
+
+            serviceField.addEventListener('change', toggleFields);
+            toggleFields();  // Initial call to set the correct state
+        });
+    </script>
 {% endblock %}
