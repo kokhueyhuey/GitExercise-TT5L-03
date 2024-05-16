@@ -59,7 +59,7 @@ def BookingPage(request):
     else:
         form = BookingForm(owner)
     # Fetch bookings specific to the current owner
-    # bookings = Booking.objects.filter(owner=owner)
+    bookings = Booking.objects.filter(owner=owner)
 
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html',context)
