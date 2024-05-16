@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login ,logout
 
 from django.contrib import messages
@@ -34,11 +35,11 @@ def AdminPage(request):
               }
     return render(request, 'admin_dashboard.html', context)
 
-
 def BookingPage(request):
+    owner = request.user.owner  # Get the owner instance related to the logged-in user
+
     if request.method == 'POST':
-        form = BookingForm(request.user.owner, request.POST)
-        print(form.errors)
+        form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = request.user.owner
@@ -52,13 +53,16 @@ def BookingPage(request):
             booking.save()
             print(form.errors)
             form.save_m2m()
-            messages.success(request, f'booking has been updated')
-            return redirect('bookingpage')
+            messages.success(request, f'Booking has been updated')
+            context = {'form': form, 'booking': booking}
+            return render(request, 'bookingpage.html', context)
     else:
-        form = BookingForm(request.user.owner)
+        form = BookingForm(owner)
+    # Fetch bookings specific to the current owner
+    bookings = Booking.objects.filter(owner=owner)
 
-    context = {'form': form }
-    return render(request, 'bookingpage.html', context)
+    context = {'form': form, 'bookings': bookings}
+    return render(request, 'bookingpage.html',context)
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
@@ -216,3 +220,14 @@ def logoutUser(request):
 def home(request):
     context={}
     return render(request, "home.html", context)
+
+@login_required
+def customer_booking(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner, )
+    
+    context = {
+        'bookings': bookings,
+    }
+    
+    return render(request, 'customer_booking.html', context)
