@@ -125,7 +125,7 @@
             </div>
         </form>
 
-        {% if booking %}
+        <!-- {% for booking in bookings %}
 <div>
     <h3>New Booking Information:</h3>
     <p><strong>Owner:</strong> {{ booking.owner }}</p>
@@ -133,11 +133,10 @@
     <p><strong>Time:</strong> {{ booking.time }}</p>
     <p><strong>Service:</strong> {{ booking.service }}</p>
     <p><strong>Status:</strong> {{ booking.status }}</p>
-    <!-- Add any other relevant details you want to display -->
 </div>
-        {% endif %}
+        {% endfor %}
 
-    </div>
+    </div> -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const serviceField = document.querySelector('select[name="service"]');

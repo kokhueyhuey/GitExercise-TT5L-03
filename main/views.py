@@ -36,52 +36,71 @@ def AdminPage(request):
 
 
 def BookingPage(request):
+    owner = request.user.owner  # Get the owner instance related to the logged-in user
+
     if request.method == 'POST':
-        form = BookingForm(request.user.owner, request.POST)
+        form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.owner = request.user.owner
-
+            booking.owner = owner  # Associate the booking with the current owner
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
             else:
                 booking.checkin = None
                 booking.checkout = None
+
             booking.save()
-            print(form.errors)
             form.save_m2m()
             messages.success(request, f'Booking has been updated')
-            # Pass the booking object to the template context
             context = {'form': form, 'booking': booking}
             return render(request, 'bookingpage.html', context)
         else:
             print(form.errors)
     else:
-        form = BookingForm(request.user.owner)
+        form = BookingForm(owner)
+    # Fetch bookings specific to the current owner
+    bookings = Booking.objects.filter(owner=owner)
 
-    context = {'form': form}
+    context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Booking
+from .forms import BookingForm
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     owner = booking.owner
     owner_pets = Pet.objects.filter(owner=owner)
-    print(owner_pets)  # Retrieve the owner associated with the booking
+    
     if request.method == 'POST':
-        form = BookingForm(owner,request.POST, instance=booking)
+        form = BookingForm(owner, request.POST, instance=booking)
         if form.is_valid():
-            form.save()  
-            return redirect('admin_dashboard')  
+            booking_instance = form.save(commit=False)
+            if booking_instance.service in ['Pet Hotel', 'Pet Daycare']:
+                booking_instance.date = None
+                booking_instance.time = None
+            else:
+                booking_instance.checkin = None
+                booking_instance.checkout = None
+            booking_instance.save()
+            return redirect('admin_dashboard')
     else:
-        form = BookingForm(owner,instance=booking)  
+        form = BookingForm(owner, instance=booking)
+    
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
+
+
 
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
     if request.method == 'POST':
         new_status = request.POST.get('status')
+        
         booking.status = new_status
         booking.save()
         return redirect('admin_dashboard')
@@ -221,3 +240,17 @@ def logoutUser(request):
 def home(request):
     context={}
     return render(request, "home.html", context)
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Booking
+
+# @login_required
+# def customerbooking(request):
+#     owner = request.user.owner  # Get the owner instance related to the logged-in user
+#     bookings = Booking.objects.filter(owner=owner)  # Fetch bookings specific to the current owner
+
+#     context = {
+#         'bookings': bookings,
+#     }
+#     return render(request, 'bookingpage.html', context)
