@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login ,logout
 
 from django.contrib import messages
@@ -34,51 +35,72 @@ def AdminPage(request):
               }
     return render(request, 'admin_dashboard.html', context)
 
-
 def BookingPage(request):
+    owner = request.user.owner  # Get the owner instance related to the logged-in user
+
     if request.method == 'POST':
-        form = BookingForm(request.user.owner, request.POST)
-        print(form.errors)
+        form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.owner = request.user.owner
-
+            booking.owner = owner  # Associate the booking with the current owner
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
             else:
                 booking.checkin = None
                 booking.checkout = None
-            booking.save()
-            print(form.errors)
-            form.save_m2m()
-            messages.success(request, f'booking has been updated')
-            return redirect('bookingpage')
-    else:
-        form = BookingForm(request.user.owner)
 
-    context = {'form': form }
+            booking.save()
+            form.save_m2m()
+            messages.success(request, f'Booking has been updated')
+            context = {'form': form, 'booking': booking}
+            return render(request, 'bookingpage.html', context)
+        else:
+            print(form.errors)
+    else:
+        form = BookingForm(owner)
+    # Fetch bookings specific to the current owner
+    bookings = Booking.objects.filter(owner=owner)
+
+    context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Booking
+from .forms import BookingForm
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     owner = booking.owner
     owner_pets = Pet.objects.filter(owner=owner)
-    print(owner_pets)  # Retrieve the owner associated with the booking
+    
     if request.method == 'POST':
-        form = BookingForm(owner,request.POST, instance=booking)
+        form = BookingForm(owner, request.POST, instance=booking)
         if form.is_valid():
-            form.save()  
-            return redirect('admin_dashboard')  
+            booking_instance = form.save(commit=False)
+            if booking_instance.service in ['Pet Hotel', 'Pet Daycare']:
+                booking_instance.date = None
+                booking_instance.time = None
+            else:
+                booking_instance.checkin = None
+                booking_instance.checkout = None
+            booking_instance.save()
+            return redirect('admin_dashboard')
     else:
-        form = BookingForm(owner,instance=booking)  
+        form = BookingForm(owner, instance=booking)
+    
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
+
+
 
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
     if request.method == 'POST':
         new_status = request.POST.get('status')
+        
         booking.status = new_status
         booking.save()
         return redirect('admin_dashboard')
@@ -91,7 +113,9 @@ from .models import Booking
 
 def ownerpf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'admin_showprofile.html', {'booking': booking})
+    pets = booking.pet.all()
+    print(pets)  # Debug output
+    return render(request, 'admin_showprofile.html', {'booking': booking, 'pets': pets})
 
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
@@ -216,3 +240,14 @@ def logoutUser(request):
 def home(request):
     context={}
     return render(request, "home.html", context)
+
+@login_required
+def customer_booking(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner, )
+    
+    context = {
+        'bookings': bookings,
+    }
+    
+    return render(request, 'customer_booking.html', context)

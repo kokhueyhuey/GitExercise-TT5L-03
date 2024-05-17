@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Booking</title>
+    <style>
+        .dash {
+            color: #FF5733; 
+            font-family: Arial, sans-serif; 
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd; /* Add border to the table */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Add border to table cells */
+            padding: 8px; /* Add padding to table cells */
+            text-align: left; /* Align text to the left */
+        }
+
+        th {
+            background-color: #f2f2f2; /* Add background color to table header */
+            font-weight: bold; /* Optionally, make table header bold */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Add alternate background color to even rows */
+        }
+
+        /* Style for buttons */
+        .button {
+            background-color: #007bff; /* Change button background color */
+            color: #fff; /* Change button text color */
+            border: none; /* Remove button border */
+            padding: 8px 16px; /* Add padding to button */
+            border-radius: 5px; /* Add border radius to button */
+            cursor: pointer; /* Change cursor to pointer on hover */
+            font-size: 14px; /* Change font size of button text */
+        }
+
+        .button:hover {
+            background-color: #0056b3; /* Change button background color on hover */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="dashb">Customer Booking</h1>
+    <div style="margin-top: 20px; margin-bottom: 20px;">
+    <h2 class="dash">Your Bookings</h2>
+    <form method="GET" action="" class="sorting-form">
+        <label for="sort_by">Sort By:</label>
+        <select name="sort_by" id="sort_by" class="sort-select">
+            <option value="date">Date</option>
+            <option value="id">Booking ID</option>
+        </select>
+        <button type="submit" class="sort-button">Sort</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Pet name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Service</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.id }}</td>
+                <td>
+                    {% for pet in booking.pet.all %}
+                        {{ pet.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ booking.date }}</td>
+                <td>{{ booking.time }}</td>
+                <td>{{ booking.service }}</td>
+                <td>{{ booking.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>
+{% endblock %}

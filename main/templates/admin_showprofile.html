@@ -2,79 +2,117 @@
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: "Quicksand", sans-serif;
             background-color: #F9F2EB;
             margin: 0;
-            box-sizing: border-box;
-           
+            padding: 0; /* Adjusted padding */
         }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
+        .container-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            text-align: center;
+            max-width: 100%; /* Adjusted max-width */
+            padding: 0 20px; /* Added padding */
+        }
+        .profile1,
+        .bigcontainer {
+            width: 400px;
+            margin-bottom: 20px;
+            padding: 30px;
             background-color: #fff;
+            color: #66463F;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .profile1 {
+            margin-right: 20px;
+        }
+        .pf {
+            margin-bottom: 20px;
+            color: #66463F;
+            font-size: 24px;
+        }
+        .profile-info p {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+        .profile-container {
+            background-color: rgb(255,223,203);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: rgb(102,58,60);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        p {
             margin-bottom: 15px;
+            text-align: left;
         }
-
-        form {
-            display: inline-block;
-            margin-top: 20px;
+        .profile-container p {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: rgb(102,58,60);
         }
-
-        input[type="hidden"] {
-            display: none;
-        }
-
         button {
             background-color: rgb(102,58,60);
-            border: none;
+            border: 2px solid white;
             color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin-top: 10px;
-            cursor: pointer;
+            padding: 12px 24px;
+            font-size: 18px;
             border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
+            cursor: pointer;
+            transition:0.3s ease;
+        }       
 
         button:hover {
-            background-color: grey;
+            background-color: rgb(255,223,203);
+            color: rgb(102,58,60);
+        }
+        a {
+            text-decoration: none;
+        }
+        .fas {
+            margin-right: 5px;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 0;
         }
     </style>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
 </head>
 <body>
-    <h1>Owner Profile</h1>
-<div class="container">
-    <p>Owner: {{ booking.owner }}</p>
-    <p>Phone no.: {{ booking.owner.phone_number }}</p>
-    <p>Email: {{ booking.owner.email }}</p>
-    <p>Pet name: {{ booking.pet }}</p>
-    <p>Pet age: {{ booking.pet.age }}</p>
-    <p>Pet species: {{ booking.pet.species }}</p>
-    <p>Pet breed: {{ booking.pet.breed }}</p>
-    {% csrf_token %}
-    <a href="{% url 'admin_dashboard' %}"><button>Go Back</button></a>
-</div>
-</body>
+<a href="{% url 'admin_dashboard' %}"><button><i class="fas fa-arrow-left"></i> Go Back</button></a>
+    <div class="container-wrapper">
+        <div class="profile1">
+            <h2 class="pf"><i class="fas fa-user"></i> Owner Information</h2>
+            <div class="profile-info">
+                <p><strong>Owner:</strong> {{ booking.owner }}</p>
+                <p><strong>Phone no.:</strong> {{ booking.owner.phone_number }}</p>
+                <p><strong>Email:</strong> {{ booking.owner.email }}</p>
+            </div>
+        </div>
+
+        <div class="bigcontainer">
+            <h2 class="pf"><i class="fas fa-paw"></i> Pet Profiles</h2>
+            {% for pet in pets %}
+            <div class="profile-container">
+                <div class="profile-info">
+                    <p><strong>Pet name:</strong> {{ pet.name }}</p>
+                    <p><strong>Pet age:</strong> {{ pet.age }}</p>
+                    <p><strong>Pet species:</strong> {{ pet.species }}</p>
+                    <p><strong>Pet breed:</strong> {{ pet.breed }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </html>
 {% endblock %}
+
+
+

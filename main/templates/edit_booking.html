@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -7,6 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: "Quicksand", sans-serif;
@@ -18,7 +20,7 @@
         .container-wrapper {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             margin-top: 20px;
         }
         .container {
@@ -30,7 +32,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .container1 {
-            width: 400px;
+            width: 400px; 
             margin-right: 20px;
             padding: 20px;
             background-color: #fff;
@@ -62,6 +64,8 @@
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group input[type="time"],
+        #id_checkin,
+        #id_checkout,
         .form-group select {
             width: 100%;
             padding: 8px;
@@ -94,7 +98,14 @@
             border-radius: 5px;
         }
         .button:hover {
-            background-color: grey;
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
+        }
+        /* .arrow {
+            margin: auto;
+        } */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -106,15 +117,27 @@
             <h2 class="details">Booking details</h2>
             <p>Booking ID: {{ booking.id }}</p>
             <p>Customer name: {{ booking.owner }}</p>
-            <p>Date: {{ booking.date }}</p>
-            <p>Time: {{ booking.time }}</p>
+            {% if booking.service == 'Pet Hotel' or booking.service == 'Pet Daycare' %}
+                <p>Check-in: {{ booking.checkin }}</p>
+                <p>Check-out: {{ booking.checkout }}</p>
+            {% else %}
+                <p>Date: {{ booking.date }}</p>
+                <p>Time: {{ booking.time }}</p>
+            {% endif %}
             <p>Service: {{ booking.service }}</p>
-            <p>Pet: {{ booking.pet }}</p>
+            <p>Pet:                 
+            {% for pet in booking.pet.all %}
+                {{ pet.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}</p>
             {% csrf_token %}
         </div>
-    
+        
+        <div class="arrow">
+        <i class="fas fa-arrow-right"></i>
+        </div>
+
         <div class="container">
-            <h2 class="details">Update Booking details</h2>
+            <h2 class="details">New Booking details</h2>
             <form method="post">
                 {% csrf_token %}
                 <div class="form-group">
@@ -122,22 +145,28 @@
                     {{ form.pet }}
                 </div>
                 <div class="form-group">
-                    <label for="id_date">Date:
-                        {{ form.date }}
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label for="id_time">Time:
-                        {{ form.time }}
-                    </label>
-                </div>
-                <div class="form-group">
                     <label for="id_service">Service:</label>
                     {{ form.service }}
                 </div>
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    {{ booking.status }}
+                <div class="form-group" id ="date-field">
+                    <label for="id_date">Date:
+                    {{ form.date }}
+                    </label>
+                </div>
+                <div class="form-group" id="time-field">
+                    <label for="id_time">Time:
+                    {{ form.time }}
+                    </label>
+                </div>
+                <div class="form-group hidden" id="checkin-field">
+                    <label for="id_checkin">checkin:
+                    {{ form.checkin }}
+                    </label>
+                </div>
+                <div class="form-group hidden" id="checkout-field">
+                    <label for="id_checkout">checkout:
+                    {{ form.checkout }}
+                    </label>
                 </div>
                 <div class="button-container">
                     <input type="submit" value="Save Booking Details" class="button">
@@ -145,6 +174,32 @@
             </form>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const serviceField = document.querySelector('select[name="service"]');
+            const dateField = document.getElementById('date-field');
+            const timeField = document.getElementById('time-field');
+            const checkinField = document.getElementById('checkin-field');
+            const checkoutField = document.getElementById('checkout-field');
+
+            function toggleFields() {
+                if (serviceField.value === 'Pet Hotel' || serviceField.value === 'Pet Daycare') {
+                    dateField.classList.add('hidden');
+                    timeField.classList.add('hidden');
+                    checkinField.classList.remove('hidden');
+                    checkoutField.classList.remove('hidden');
+                } else {
+                    dateField.classList.remove('hidden');
+                    timeField.classList.remove('hidden');
+                    checkinField.classList.add('hidden');
+                    checkoutField.classList.add('hidden');
+                }
+            }
+
+            serviceField.addEventListener('change', toggleFields);
+            toggleFields();  // Initial call to set the correct state
+        });
+    </script>
 
 </body>
 </html>

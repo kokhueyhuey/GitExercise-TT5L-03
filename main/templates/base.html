@@ -44,10 +44,53 @@
         .footer-content p {
             margin: 5px 0;
         }
+        .contact {
+            color: #fff;
+        }
         
         /* .container{
             background-color: black !important;
         } */
+
+        h2 {
+            text-align: center;
+            color: #8B4513; /* Brown color for the heading */
+            margin-bottom: 20px;
+        }
+
+        .ope{
+            width: 80%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.7); /* Light brown color for the table background */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ope th, td {
+            padding: 12px;
+            text-align: left;
+            border: none;
+            font-size: 16px;
+            color: #000; /* Black color for the text */
+        }
+
+        .ope th {
+            background-color: #8B4513; /* Dark brown color for header cells */
+            text-transform: uppercase;
+            color: #FFF; /* White color for the text */
+        }
+
+        .ope td {
+            background-color: #D2B48C; /* Light brown color for data cells */
+        }
+
+        .ope r:last-child td {
+            border-bottom: none;
+
+        }
+        .contact{
+            color:#FFF
+        }
 
     </style>
 </head>
@@ -60,11 +103,49 @@
 </div>
     <footer>
         <div class="footer-content">
-            <h2>Contact Us</h2>
+            <h2 class="contact">Contact Us</h2>
             <p>	31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, 
                 Petaling Jaya, Selangor</p>
             <p>Phone/WhatsApp: 03-7722 4584</p>
             <p>Email: petpalsofficial@gmail.com</p>
+
+        </div>
+        <div>
+            <br>
+            <table class="ope">
+                <tr>
+                    <th>Day</th>
+                    <th>Opening Hours</th>
+                </tr>
+                <tr>
+                    <td>Monday</td>
+                    <td>9:00 AM - 6:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Tuesday</td>
+                    <td>9:00 AM - 6:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Wednesday</td>
+                    <td>9:00 AM - 6:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Thursday</td>
+                    <td>9:00 AM - 6:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Friday</td>
+                    <td>9:00 AM - 6:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Saturday</td>
+                    <td>10:00 AM - 4:00 PM</td>
+                </tr>
+                <tr>
+                    <td>Sunday</td>
+                    <td>Closed</td>
+                </tr>
+            </table>
         </div>
     </footer>
 </body>
