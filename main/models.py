@@ -22,6 +22,7 @@ class Pet(models.Model):
     age = models.PositiveBigIntegerField()
     species = models.CharField(max_length=50)
     breed = models.CharField(max_length=50)
+    profile_pic = models.ImageField(default="profile.jpg", null=True, blank=True)
 
     def __str__(self):
         return self.name    
