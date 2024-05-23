@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -14,7 +15,6 @@
             background-color: #F9F2EB;
             margin: 0;
             padding: 0;
-         
         }
         .container-wrapper {
             display: flex;
@@ -30,15 +30,6 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .container1 {
-            width: 400px; 
-            margin-right: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
         h1 {
             margin-bottom: 30px;
             text-align: center; 
@@ -63,8 +54,6 @@
         .form-group input[type="text"],
         .form-group input[type="date"],
         .form-group input[type="time"],
-        #id_checkin,
-        #id_checkout,
         .form-group select {
             width: 100%;
             padding: 8px;
@@ -100,45 +89,21 @@
             background-color: rgb(255,223,203);
             color: rgb(102, 58, 60);
         }
-        /* .arrow {
-            margin: auto;
-        } */
         .hidden {
             display: none;
         }
     </style>
 </head>
 <body>
-    <h1>Edit Booking</h1>
-
     <div class="container-wrapper">
-        <div class="container1">
-            <h2 class="details">Booking details</h2>
-            <p>Booking ID: {{ booking.id }}</p>
-            <p>Customer name: {{ booking.owner }}</p>
-            {% if booking.service == 'Pet Hotel' or booking.service == 'Pet Daycare' %}
-                <p>Check-in: {{ booking.checkin }}</p>
-                <p>Check-out: {{ booking.checkout }}</p>
-            {% else %}
-                <p>Date: {{ booking.date }}</p>
-                <p>Time: {{ booking.time }}</p>
-            {% endif %}
-            <p>Service: {{ booking.service }}</p>
-            <p>Pet:                 
-            {% for pet in booking.pet.all %}
-                {{ pet.name }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}</p>
-            {% csrf_token %}
-        </div>
-        
-        <div class="arrow">
-        <i class="fas fa-arrow-right"></i>
-        </div>
-
         <div class="container">
-            <h2 class="details">New Booking details</h2>
+            <h1>Edit Booking</h1>
             <form method="post">
                 {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_owner">Customer Name:</label>
+                    <input type="text" id="id_owner" name="owner" value="{{ booking.owner.user.username }}" readonly>
+                </div>
                 <div class="form-group">
                     <label for="id_pet">Pet:</label>
                     {{ form.pet }}
@@ -147,25 +112,21 @@
                     <label for="id_service">Service:</label>
                     {{ form.service }}
                 </div>
-                <div class="form-group" id ="date-field">
-                    <label for="id_date">Date:
+                <div class="form-group" id="date-field">
+                    <label for="id_date">Date:</label>
                     {{ form.date }}
-                    </label>
                 </div>
                 <div class="form-group" id="time-field">
-                    <label for="id_time">Time:
+                    <label for="id_time">Time:</label>
                     {{ form.time }}
-                    </label>
                 </div>
                 <div class="form-group hidden" id="checkin-field">
-                    <label for="id_checkin">checkin:
+                    <label for="id_checkin">Check-in:</label>
                     {{ form.checkin }}
-                    </label>
                 </div>
                 <div class="form-group hidden" id="checkout-field">
-                    <label for="id_checkout">checkout:
+                    <label for="id_checkout">Check-out:</label>
                     {{ form.checkout }}
-                    </label>
                 </div>
                 <div class="button-container">
                     <input type="submit" value="Save Booking Details" class="button">
@@ -199,7 +160,6 @@
             toggleFields();  // Initial call to set the correct state
         });
     </script>
-
 </body>
 </html>
 {% endblock %}
