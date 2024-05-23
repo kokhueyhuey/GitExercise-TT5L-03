@@ -12,7 +12,9 @@ from .models import Pet, Owner, Booking
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from .models import Booking, Owner
+from django.views.generic.edit import UpdateView
+from .forms import BookingForm
+
 
 def AdminPage(request):
     if request.method == 'POST':
@@ -28,18 +30,15 @@ def AdminPage(request):
 
     sort_by = request.GET.get('sort_by', 'date')
 
-    if sort_by == 'date':
-        ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('-date')
-        completed_bookings = Booking.objects.filter(status='Completed').order_by('-date')
-        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('-date')
-    elif sort_by == 'id':
-        ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('id')
-        completed_bookings = Booking.objects.filter(status='Completed').order_by('id')
-        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('id')
+    order_by = '-date'  # default ordering
+    if sort_by == 'id':
+        order_by = 'id'
     elif sort_by == 'service':
-        ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by('service')
-        completed_bookings = Booking.objects.filter(status='Completed').order_by('service')
-        cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('service')
+        order_by = 'service'
+
+    ongoing_bookings = Booking.objects.filter(status='Ongoing').order_by(order_by)
+    completed_bookings = Booking.objects.filter(status='Completed').order_by(order_by)
+    cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by(order_by)
 
     owners = Owner.objects.all()
     context = {
@@ -50,16 +49,31 @@ def AdminPage(request):
     }
     return render(request, 'admin_dashboard.html', context)
 
+class BookingUpdateView(UpdateView):
+    model = Booking
+    form_class = BookingForm
+    template_name = 'edit_booking.html'
+
+    def get_object(self):
+        booking_id = self.kwargs.get('pk')
+        return get_object_or_404(Booking, id=booking_id)
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('admin_dashboard')
+
+
+
 
 
 def BookingPage(request):
-    owner = request.user.owner  # Get the owner instance related to the logged-in user
+    owner = request.user.owner 
 
     if request.method == 'POST':
         form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.owner = owner  # Associate the booking with the current owner
+            booking.owner = owner  
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
@@ -76,7 +90,6 @@ def BookingPage(request):
             print(form.errors)
     else:
         form = BookingForm(owner)
-    # Fetch bookings specific to the current owner
     bookings = Booking.objects.filter(owner=owner)
 
     context = {'form': form, 'bookings': bookings}
@@ -118,18 +131,6 @@ from django.views.generic.edit import UpdateView
 from .models import Booking
 from .forms import BookingForm
 
-class BookingUpdateView(UpdateView):
-    model = Booking
-    form_class = BookingForm
-    template_name = 'edit_booking.html'
-
-    def get_object(self):
-        booking_id = self.kwargs.get('pk')
-        return get_object_or_404(Booking, id=booking_id)
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('admin_dashboard') 
 
 
 
