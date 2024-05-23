@@ -22,7 +22,7 @@
             border: 3px solid rgb(102, 58, 60);
             border-radius: 10px;
             padding: 20px;
-            font-weight:600 !important;
+            font-weight: 600 !important;
             background-color: white;
             text-align: center;
             color: rgb(102, 58, 60);
@@ -39,7 +39,7 @@
         }
 
         h3 {
-            font-size:x-large;
+            font-size: x-large;
         }
 
         h1 {
@@ -59,54 +59,117 @@
             position: sticky;
         }
 
+        /* Flex container for text and sticky note */
+        .flex-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        /* Sticky Note Styles */
+        .sticky-note {
+            background-color: #ffeb3b;
+            width: 400px; /* Fixed width to avoid being narrow */
+            padding: 20px;
+            margin: 60px 0 20px 0; /* Increased top margin to move it downward */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            transform: rotate(-2deg); /* Reduced rotation */
+            position: relative;
+            flex-shrink: 0; /* Prevent the sticky note from shrinking */
+        }
+
+        .sticky-note:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #ffeb3b;
+            transform: rotate(45deg) translateX(-50%);
+            box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sticky-note h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .sticky-note ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sticky-note li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
 <section id="introduction" class="introduction">
-            <img src="{% static 'image/welcome.png' %}" alt="PawBanner" class="banner">
+    <img src="{% static 'image/welcome.png' %}" alt="PawBanner" class="banner">
+    <div class="flex-container">
+        <div>
             <p class="desc">- Your pet's comfort and care are our top priorities. At PetPals, we provide professional grooming treatments from skilled specialists who love what they do. Whether it's a simple wash and dry, a stylish trim, or a full grooming session, we ensure your beloved pet looks their best and feels great. Visit us to experience the ultimate in pet pampering.</p>
             <h2 class="t">Why choose PetPals ?</h2>
-        <ul class="desc">
-            <li><p class="descr">Expert Grooming: </p> Our team consists of passionate pet lovers who are also highly skilled groomers. With years of experience and a gentle touch, we ensure that your furry friend receives the royal treatment they deserve.</li>
-            <li><p class="descr">Personalized Care: </p> We believe in individualized care for each pet that walks through our doors. Whether your pooch prefers a stylish haircut, a soothing bath, or a nail trim, we tailor our services to cater to their specific requirements.</li>
-            <li><p class="descr">Safe and Comfortable Environment: </p> The comfort and safety of your pet are our top priorities. Our grooming facilities are designed with your pet's well-being in mind, featuring state-of-the-art equipment and soothing ambiance to keep them relaxed throughout their grooming session.</li>
-            <li><p class="descr">Premium Products: </p> We use only the highest quality grooming products that are safe and gentle on your pet's skin and coat. From hypoallergenic shampoos to nourishing conditioners, we ensure that your pet receives nothing but the best.</li>
-            <li><p class="descr">Convenient Booking: </p> With our easy-to-use online booking system, scheduling your pet's grooming appointment has never been easier. Simply choose your preferred date and time, and we'll take care of the rest.</li>
-            <li><p class="descr">Exceptional Customer Service: </p> At PetPals, we pride ourselves on providing exceptional customer service. Our friendly and knowledgeable staff are always here to address any questions or concerns you may have, ensuring a stress-free experience for both you and your pet.</li>
-        </ul>
+            <ul class="desc">
+                <li><p class="descr">Expert Grooming: </p> Our team consists of passionate pet lovers who are also highly skilled groomers. With years of experience and a gentle touch, we ensure that your furry friend receives the royal treatment they deserve.</li>
+                <li><p class="descr">Personalized Care: </p> We believe in individualized care for each pet that walks through our doors. Whether your pooch prefers a stylish haircut, a soothing bath, or a nail trim, we tailor our services to cater to their specific requirements.</li>
+                <li><p class="descr">Safe and Comfortable Environment: </p> The comfort and safety of your pet are our top priorities. Our grooming facilities are designed with your pet's well-being in mind, featuring state-of-the-art equipment and soothing ambiance to keep them relaxed throughout their grooming session.</li>
+                <li><p class="descr">Premium Products: </p> We use only the highest quality grooming products that are safe and gentle on your pet's skin and coat. From hypoallergenic shampoos to nourishing conditioners, we ensure that your pet receives nothing but the best.</li>
+                <li><p class="descr">Convenient Booking: </p> With our easy-to-use online booking system, scheduling your pet's grooming appointment has never been easier. Simply choose your preferred date and time, and we'll take care of the rest.</li>
+                <li><p class="descr">Exceptional Customer Service: </p> At PetPals, we pride ourselves on providing exceptional customer service. Our friendly and knowledgeable staff are always here to address any questions or concerns you may have, ensuring a stress-free experience for both you and your pet.</li>
+            </ul>
+        </div>
+        <!-- Sticky Note placed beside the specific text -->
+        <div class="sticky-note">
+            <h2>Opening Hours</h2>
+            <ul>
+                <li>Monday: 9:00 AM - 5:00 PM</li>
+                <li>Tuesday: 9:00 AM - 5:00 PM</li>
+                <li>Wednesday: 9:00 AM - 5:00 PM</li>
+                <li>Thursday: 9:00 AM - 5:00 PM</li>
+                <li>Friday: 9:00 AM - 5:00 PM</li>
+                <li>Saturday: 10:00 AM - 4:00 PM</li>
+                <li>Sunday: Closed</li>
+            </ul>
+        </div>
+    </div>
 </section>
-    <section id="services">
-        <h2 class="t">Services We Offer :</h2>
-        <div class="services">
-            <div class="service">
-                <h3>Bath & Brush</h3>
-                <p>Our expert groomers will lovingly cleanse and groom your pet, leaving them feeling fresh, clean, and oh-so-fluffy. 
-                   Say goodbye to tangled fur and hello to silky-smooth coats!</p>
-                   <img src="{% static 'image/dogbath_img.jpg' %}" alt="DogBath" width="230" height="180">
-            </div>
-            <div class="service">
-                <h3>Haircut & Styling</h3>
-                <p>Transform your pet's look from 'ruff' to fabulous with our expert haircut and styling service! Our talented groomers will work their magic to create a tailored look that suits your pet's personality and lifestyle.</p>
-                <img src="{% static 'image/doghaircut_img.jpg' %}" alt="DogHaircut" width="230" height="180">
-            </div>
-            <div class="service">
-                <h3>Nail Trimming</h3>
-                <p>Trimming nails made easy! Gentle care for happy paws. Our meticulous nail trimming service will keep your pet's nails at the perfect length, promoting optimal paw health and preventing painful issues like ingrown nails.</p>
-                <img src="{% static 'image/catnailtrimming.jpg' %}" alt="CatNailTrim" width="230" height="180">
-            </div>
-            <div class="service">
-                <h3>Pet Daycare</h3>
-                <p>Give your pet a day of fun and friends at our daycare! With attentive staff and plenty of playtime, they'll love every moment.</p>
-                <img src="{% static 'image/petbackyard.jpeg' %}" alt="PetBackyard" width="230" height="180">
-            </div>
-            <div class="service">
-                <h3>Pet Hotel</h3>
-                <p>Indulge your pet in the lap of luxury with our premier pet hotel! We provide a five-star experience for your beloved furry companions and rest assured your pet will feel right at home with us.</p>
-                <img src="{% static 'image/pethotel_img.jpeg' %}" alt="PetHotel" width="230" height="180">
-            </div>
-    </section>
+<section id="services">
+    <h2 class="t">Services We Offer :</h2>
+    <div class="services">
+        <div class="service">
+            <h3>Bath & Brush</h3>
+            <p>Our expert groomers will lovingly cleanse and groom your pet, leaving them feeling fresh, clean, and oh-so-fluffy.
+               Say goodbye to tangled fur and hello to silky-smooth coats!</p>
+               <img src="{% static 'image/dogbath_img.jpg' %}" alt="DogBath" width="230" height="180">
+        </div>
+        <div class="service">
+            <h3>Haircut & Styling</h3>
+            <p>Transform your pet's look from 'ruff' to fabulous with our expert haircut and styling service! Our talented groomers will work their magic to create a tailored look that suits your pet's personality and lifestyle.</p>
+            <img src="{% static 'image/doghaircut_img.jpg' %}" alt="DogHaircut" width="230" height="180">
+        </div>
+        <div class="service">
+            <h3>Nail Trimming</h3>
+            <p>Trimming nails made easy! Gentle care for happy paws. Our meticulous nail trimming service will keep your pet's nails at the perfect length, promoting optimal paw health and preventing painful issues like ingrown nails.</p>
+            <img src="{% static 'image/catnailtrimming.jpg' %}" alt="CatNailTrim" width="230" height="180">
+        </div>
+        <div class="service">
+            <h3>Pet Daycare</h3>
+            <p>Give your pet a day of fun and friends at our daycare! With attentive staff and plenty of playtime, they'll love every moment.</p>
+            <img src="{% static 'image/petbackyard.jpeg' %}" alt="PetBackyard" width="230" height="180">
+        </div>
+        <div class="service">
+            <h3>Pet Hotel</h3>
+            <p>Indulge your pet in the lap of luxury with our premier pet hotel! We provide a five-star experience for your beloved furry companions and rest assured your pet will feel right at home with us.</p>
+            <img src="{% static 'image/pethotel_img.jpeg' %}" alt="PetHotel" width="230" height="180">
+        </div>
+    </div>
+</section>
 
-   
 </body>
 </html>
 
