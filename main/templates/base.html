@@ -1,14 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset ="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetPals</title>
+</head>
+<body>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: "Quicksand", sans-serif;
@@ -20,11 +22,13 @@
             background-color: #F9F2EB;
         }
 
+
         h2 {
             color: white;
             font-size: xx-large;
         }
 
+        
         footer {
             background-color: rgb(102, 58, 60);
             color: white;
@@ -37,14 +41,16 @@
             max-width: 960px;
             margin: 0 auto;
         }
-
         .footer-content p {
             margin: 5px 0;
         }
-
         .contact {
             color: #fff;
         }
+        
+        /* .container{
+            background-color: black !important;
+        } */
 
         h2 {
             text-align: center;
@@ -52,7 +58,7 @@
             margin-bottom: 20px;
         }
 
-        .ope {
+        .ope{
             width: 80%;
             border-collapse: collapse;
             margin: 0 auto;
@@ -80,26 +86,31 @@
 
         .ope r:last-child td {
             border-bottom: none;
+
+        }
+        .contact{
+            color:#FFF
         }
 
-        .contact {
-            color: #FFF;
-        }
     </style>
 </head>
+
 <body>
     {% include 'navbar.html' %}
-    <!-- <div class="container"> -->
+<!-- <div class = "container"> -->
     {% block content %}
     {% endblock %}
-    <!-- </div> -->
+</div>
     <footer>
         <div class="footer-content">
             <h2 class="contact">Contact Us</h2>
-            <p>31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, Petaling Jaya, Selangor</p>
+            <p>	31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, 
+                Petaling Jaya, Selangor</p>
             <p>Phone/WhatsApp: 03-7722 4584</p>
             <p>Email: petpalsofficial@gmail.com</p>
+
         </div>
+       
     </footer>
 </body>
 </html>
