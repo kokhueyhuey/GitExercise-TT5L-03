@@ -17,17 +17,6 @@ from .forms import BookingForm
 
 
 def AdminPage(request):
-    if request.method == 'POST':
-        booking_id = request.POST.get('booking_id')
-        new_status = request.POST.get('status')
-        
-        if booking_id and new_status:
-            booking = get_object_or_404(Booking, id=booking_id)
-            if new_status in ['Ongoing', 'Completed', 'Cancelled']:
-                booking.status = new_status
-                booking.save()
-            return redirect('admin_dashboard')
-
     sort_by = request.GET.get('sort_by', 'date')
 
     order_by = '-date'  # default ordering
@@ -40,13 +29,13 @@ def AdminPage(request):
     completed_bookings = Booking.objects.filter(status='Completed').order_by(order_by)
     cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by(order_by)
 
+  
     owners = Owner.objects.all()
-    context = {
-        'ongoing_bookings': ongoing_bookings,
-        'completed_bookings': completed_bookings,
-        'cancelled_bookings': cancelled_bookings,
-        'owners': owners,
-    }
+    context = {'ongoing_bookings': ongoing_bookings, 
+               'completed_bookings': completed_bookings,  
+               'cancelled_bookings': cancelled_bookings,
+               'owners': owners,
+              }
     return render(request, 'admin_dashboard.html', context)
 
 class BookingUpdateView(UpdateView):
