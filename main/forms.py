@@ -22,7 +22,7 @@ class OwnerUpdateForm(forms.ModelForm):
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = ['name','age','species','breed']
+        fields = ['name','age','species','breed','profile_pic']
 
 class BookingForm(forms.ModelForm):
     SERVICE_CHOICES = [

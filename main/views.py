@@ -160,12 +160,12 @@ def PetprofilePage(request):
     # else:
     #     pet_instance = pet_instances.first()
     if request.method == 'POST':
-        form = PetForm(request.POST)
+        form = PetForm(request.POST, request.FILES)
         if form.is_valid():
             pet = form.save(commit=False)
             pet.owner = owner_instance
             pet.save()
-            # form.save()
+            form.save_m2m()
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
@@ -176,12 +176,12 @@ def PetprofilePage(request):
 
 def edit_pet(request, pet_id):
     pet_instance = get_object_or_404(Pet, id=pet_id)
-    print(pet_instance)
     if request.method == 'POST':
-        form = PetForm(request.POST, instance=pet_instance)
+        form = PetForm(request.POST, request.FILES, instance=pet_instance)
         if form.is_valid():
-            form.save()
-            return redirect('petprofile')
+            pet = form.save(commit=False)
+            pet.save()
+            return redirect('edit_pet',pet_id=pet_id)
         
     else:
         form = PetForm(initial={
@@ -189,7 +189,8 @@ def edit_pet(request, pet_id):
             'owner': pet_instance.owner,
             'age': pet_instance.age,
             'species': pet_instance.species,
-            'breed': pet_instance.breed
+            'breed': pet_instance.breed,
+            'profile_pic':pet_instance.profile_pic
         })
 
     context = {
