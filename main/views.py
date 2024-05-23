@@ -94,7 +94,6 @@ def edit_booking(request, booking_id):
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
 
 
-
 def change_status(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     
@@ -141,6 +140,8 @@ def PetprofilePage(request):
             pet.owner = owner_instance
             pet.save()
             form.save_m2m()
+
+            # form.save()
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
