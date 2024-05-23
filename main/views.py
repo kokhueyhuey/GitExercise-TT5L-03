@@ -10,7 +10,22 @@ from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
+from .models import Booking, Owner
+
 def AdminPage(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        new_status = request.POST.get('status')
+        
+        if booking_id and new_status:
+            booking = get_object_or_404(Booking, id=booking_id)
+            if new_status in ['Ongoing', 'Completed', 'Cancelled']:
+                booking.status = new_status
+                booking.save()
+            return redirect('admin_dashboard')
+
     sort_by = request.GET.get('sort_by', 'date')
 
     if sort_by == 'date':
@@ -26,14 +41,16 @@ def AdminPage(request):
         completed_bookings = Booking.objects.filter(status='Completed').order_by('service')
         cancelled_bookings = Booking.objects.filter(status='Cancelled').order_by('service')
 
-  
     owners = Owner.objects.all()
-    context = {'ongoing_bookings': ongoing_bookings, 
-               'completed_bookings': completed_bookings,  
-               'cancelled_bookings': cancelled_bookings,
-               'owners': owners,
-              }
+    context = {
+        'ongoing_bookings': ongoing_bookings,
+        'completed_bookings': completed_bookings,
+        'cancelled_bookings': cancelled_bookings,
+        'owners': owners,
+    }
     return render(request, 'admin_dashboard.html', context)
+
+
 
 def BookingPage(request):
     owner = request.user.owner  # Get the owner instance related to the logged-in user
@@ -95,17 +112,25 @@ def edit_booking(request, booking_id):
 
 
 
-def change_status(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id)
-    
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        
-        booking.status = new_status
-        booking.save()
-        return redirect('admin_dashboard')
-    
-    return render(request, 'change_status.html', {'booking': booking})
+
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic.edit import UpdateView
+from .models import Booking
+from .forms import BookingForm
+
+class BookingUpdateView(UpdateView):
+    model = Booking
+    form_class = BookingForm
+    template_name = 'edit_booking.html'
+
+    def get_object(self):
+        booking_id = self.kwargs.get('pk')
+        return get_object_or_404(Booking, id=booking_id)
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('admin_dashboard') 
+
 
 
 from django.shortcuts import render, get_object_or_404

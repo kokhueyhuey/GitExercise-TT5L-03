@@ -127,7 +127,56 @@
             background-color: rgb(255,223,203);
             color: rgb(102, 58, 60);
         }
-        .tab {
+
+        .button-complete {
+            background-color: green;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-complete:hover {
+            background-color: lightgreen;
+        }
+
+        .button-ongoing {
+            background-color: darkorange;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-ongoing:hover {
+            background-color:orange;
+        }
+
+        .button-cancel {
+            background-color: red;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-cancel:hover {
+            background-color: darkred;
         }
 
     </style>
@@ -182,10 +231,18 @@
                     {% csrf_token %}
                     <button type="submit" class="button">Edit Booking</button>
                 </form>
-                <form method="get" action="{% url 'change_status' booking.id %}">
+                <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="button">Change Status</button>
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Completed">
+                    <button type="submit" class="button-complete">Complete booking</button>
                 </form>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Cancelled">
+                    <button type="submit" class="button-cancel" >Cancel booking</button>
+                </form>            
             </td>
         </tr>
         {% endfor %}
@@ -231,11 +288,18 @@
                     {% csrf_token %}
                     <button type="submit" class="button">Edit Booking</button>
                 </form>
-                <form method="get" action="{% url 'change_status' booking.id %}">
+                <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="button">Change Status</button>
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Ongoing">
+                    <button type="submit" class="button-ongoing">Change to Ongoing</button>
                 </form>
-            </td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Cancelled">
+                    <button type="submit"class="button-cancel" >Cancel booking</button>
+                </form>        
         </tr>
         {% endfor %}
     </tbody>
@@ -280,12 +344,19 @@
                     {% csrf_token %}
                     <button type="submit" class="button">Edit Booking</button>
                 </form>
-                <form method="get" action="{% url 'change_status' booking.id %}">
+                <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="button">Change Status</button>
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Ongoing">
+                    <button type="submit" class="button-ongoing">Change to Ongoing</button>
                 </form>
-            </td>
-        </tr>
+                <form method="post" >
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <input type="hidden" name="status" value="Completed">
+                    <button type="submit" class="button-complete">Complete booking</button>
+                </form>        
+    </tr>
         {% endfor %}
         
     </tbody>
