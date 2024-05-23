@@ -50,7 +50,7 @@
     </style>
 </head>
 <body>
-    <h1 class="dashb">Customer Booking</h1>
+    <h1 class="ti">Customer Booking</h1>
     <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Your Bookings</h2>
     <form method="GET" action="" class="sorting-form">
@@ -69,6 +69,8 @@
                 <th>Pet name</th>
                 <th>Date</th>
                 <th>Time</th>
+                <th>Checkin</th>
+                <th>Checkout</th>
                 <th>Service</th>
                 <th>Status</th>
             </tr>
@@ -82,8 +84,10 @@
                         {{ pet.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </td>
-                <td>{{ booking.date }}</td>
-                <td>{{ booking.time }}</td>
+                <td>{{ booking.date|default:"-" }}</td>
+                <td>{{ booking.time|default:"-" }}</td>
+                <td>{{ booking.checkin|default:"-" }}</td>
+                <td>{{ booking.checkout|default:"-" }}</td>
                 <td>{{ booking.service }}</td>
                 <td>{{ booking.status }}</td>
             </tr>
