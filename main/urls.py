@@ -1,6 +1,6 @@
 from django.urls import path 
 from . import views
-
+from .views import AdminPage, BookingUpdateView
 urlpatterns = [
     path('admin_dashboard/', views.AdminPage, name="admin_dashboard"),
     path('profile/', views.profilePage, name="profile"),
@@ -11,8 +11,8 @@ urlpatterns = [
     path('logout/', views.logoutUser, name="logout"),
     path('bookingpage/', views.BookingPage, name="bookingpage"),
     path('',views.home, name="home"),
-    path('booking/edit/<int:booking_id>/', views.edit_booking, name='edit_booking'),
-    path('change_status/<int:booking_id>/', views.change_status, name='change_status'),
+    path('edit-booking/<int:booking_id>/', views.edit_booking, name='edit_booking'),
+    path('edit-booking/<int:pk>/', BookingUpdateView.as_view(), name='edit_booking'),
     path('ownerprofile/<int:booking_id>/', views.ownerpf, name='ownerpf'),
     path('customer_booking/', views.customer_booking, name='customer_booking'),
 ]
