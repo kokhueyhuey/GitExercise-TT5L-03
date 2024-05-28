@@ -13,6 +13,59 @@ from django.views.generic.edit import UpdateView
 from datetime import datetime, time, timedelta
 from django.utils import timezone
 from django.utils.timezone import now, localtime
+from django.shortcuts import render, get_object_or_404
+
+
+def generate_time_slots(start_time, end_time, slot_duration):
+    slots = []
+    current_time = start_time
+    while current_time < end_time:
+        slots.append(current_time.strftime("%H:%M"))
+        current_time += slot_duration
+    return slots
+
+def get_week_dates(offset=0):
+    today = localtime(now()).date()
+    start_of_week = today - timedelta(days=today.weekday())
+    start_of_week += timedelta(weeks=offset)
+    return [start_of_week + timedelta(days=i) for i in range(6)]  # Monday to Saturday
+
+def timetable(request):
+    if request.method == 'POST':
+        week_offset = int(request.POST.get('week_offset', 0))
+    else:
+        week_offset = int(request.GET.get('week_offset', 0))
+
+    week_dates = get_week_dates(week_offset)
+    timetable = []
+    hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
+
+    for day in week_dates:
+        day_schedule = []
+        for hour in hours:
+            slot_datetime = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
+            booking = Booking.objects.filter(date=day, time=slot_datetime.time()).first()
+
+            is_available = booking is None
+            day_schedule.append((slot_datetime, is_available, booking))
+        timetable.append((day, day_schedule))
+
+    context = {
+        'timetable': timetable,
+        'week_offset': week_offset,
+        'display_monday': week_dates[0],
+        'display_today': localtime().date(),
+        'hours': hours,
+    }
+    return render(request, 'timetable.html', context)
+
+
+
+
+
+from datetime import datetime, time, timedelta
+from django.utils import timezone
+from django.utils.timezone import now, localtime
 
 from django.shortcuts import render
 from django.utils.timezone import localtime
