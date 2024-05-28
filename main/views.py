@@ -7,62 +7,16 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
-from .models import Pet, Owner, Booking
+from .models import Pet, Owner, Booking, Room
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
-from datetime import datetime, time, timedelta
-from django.utils import timezone
-from django.utils.timezone import now, localtime
-from django.shortcuts import render, get_object_or_404
+from .forms import BookingForm
 
 
-def generate_time_slots(start_time, end_time, slot_duration):
-    slots = []
-    current_time = start_time
-    while current_time < end_time:
-        slots.append(current_time.strftime("%H:%M"))
-        current_time += slot_duration
-    return slots
-
-def get_week_dates(offset=0):
-    today = localtime(now()).date()
-    start_of_week = today - timedelta(days=today.weekday())
-    start_of_week += timedelta(weeks=offset)
-    return [start_of_week + timedelta(days=i) for i in range(6)]  # Monday to Saturday
-
-def timetable(request):
-    if request.method == 'POST':
-        week_offset = int(request.POST.get('week_offset', 0))
-    else:
-        week_offset = int(request.GET.get('week_offset', 0))
-
-    week_dates = get_week_dates(week_offset)
-    timetable = []
-    hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
-
-    for day in week_dates:
-        day_schedule = []
-        for hour in hours:
-            slot_datetime = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
-            booking = Booking.objects.filter(date=day, time=slot_datetime.time()).first()
-
-            is_available = booking is None
-            day_schedule.append((slot_datetime, is_available, booking))
-        timetable.append((day, day_schedule))
-
-    context = {
-        'timetable': timetable,
-        'week_offset': week_offset,
-        'display_monday': week_dates[0],
-        'display_today': localtime().date(),
-        'hours': hours,
-    }
-    return render(request, 'timetable.html', context)
-
-
-
-
-
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic.edit import UpdateView
+from .models import Booking, Owner
+from .forms import BookingForm
 
 def AdminPage(request):
     if request.method == 'POST':
@@ -110,10 +64,6 @@ class BookingUpdateView(UpdateView):
         return redirect('admin_dashboard')
 
 
-
-
-
-
 def BookingPage(request):
     owner = request.user.owner 
 
@@ -122,12 +72,28 @@ def BookingPage(request):
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = owner  
+
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
             else:
                 booking.checkin = None
                 booking.checkout = None
+
+            available_rooms = Room.objects.all()
+            for room in available_rooms:
+                overlapping_bookings = Booking.objects.filter(
+                    room=room,
+                    checkin__lte=booking.checkout,
+                    checkout__gte=booking.checkin
+                ).exists()
+                if not overlapping_bookings:
+                    booking.room = room
+                    break
+            else:
+                messages.error(request, "No rooms are available for the selected dates.")
+                context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                return render(request, 'bookingpage.html', context)            
 
             booking.save()
             form.save_m2m()
@@ -215,6 +181,8 @@ def PetprofilePage(request):
             pet.owner = owner_instance
             pet.save()
             form.save_m2m()
+
+            # form.save()
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
