@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Owner, Pet, Booking
+from .models import Owner, Pet, Booking, Room
+from django.utils import timezone
 
 class CreateUserForm(UserCreationForm):
     class Meta:
@@ -32,17 +33,15 @@ class BookingForm(forms.ModelForm):
         ('Pet Daycare', 'Pet Daycare'),
     ]
     service = forms.ChoiceField(choices=SERVICE_CHOICES)
-
+    
     class Meta:
         model = Booking
-        fields = ['pet', 'date', 'time','checkin','checkout', 'service']
+        fields = ['pet', 'date', 'time', 'checkin', 'checkout', 'service']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
+            'date': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
             'time': forms.TimeInput(attrs={'type': 'time'}),
-            'checkin': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-            'checkout': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-
-
+            'checkin': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
+            'checkout': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
         }
 
     def __init__(self, owner, *args, **kwargs):
@@ -61,4 +60,19 @@ class BookingForm(forms.ModelForm):
             if not checkout:
                 self.add_error('checkout', 'Check-out time is required for Pet Hotel and Pet Daycare services.')
 
-        return cleaned_data    
+        pet = cleaned_data.get('pet')
+        if pet and checkin and checkout:
+            available_rooms = Room.objects.all()
+            for room in available_rooms:
+                overlapping_bookings = Booking.objects.filter(
+                    room=room,
+                    checkin__lt=checkout,
+                    checkout__gt=checkin
+                ).exists()
+
+                if not overlapping_bookings :
+                    self.cleaned_data['room'] = room
+                    return cleaned_data
+
+        
+        return cleaned_data
