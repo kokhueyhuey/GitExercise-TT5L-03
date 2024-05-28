@@ -7,7 +7,9 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
-from .models import Pet, Owner, Booking
+from .models import Pet, Owner, Booking, Room
+
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
 from datetime import datetime, time, timedelta
@@ -106,10 +108,6 @@ class BookingUpdateView(UpdateView):
         return redirect('admin_dashboard')
 
 
-
-
-
-
 def BookingPage(request):
     owner = request.user.owner 
 
@@ -118,12 +116,28 @@ def BookingPage(request):
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = owner  
+
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
             else:
                 booking.checkin = None
                 booking.checkout = None
+
+            available_rooms = Room.objects.all()
+            for room in available_rooms:
+                overlapping_bookings = Booking.objects.filter(
+                    room=room,
+                    checkin__lte=booking.checkout,
+                    checkout__gte=booking.checkin
+                ).exists()
+                if not overlapping_bookings:
+                    booking.room = room
+                    break
+            else:
+                messages.error(request, "No rooms are available for the selected dates.")
+                context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                return render(request, 'bookingpage.html', context)            
 
             booking.save()
             form.save_m2m()
@@ -211,6 +225,8 @@ def PetprofilePage(request):
             pet.owner = owner_instance
             pet.save()
             form.save_m2m()
+
+            # form.save()
             messages.success(request, f'profile has been updated')
             return redirect('petprofile')
     else:
