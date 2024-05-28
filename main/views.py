@@ -68,39 +68,41 @@ class BookingUpdateView(UpdateView):
 
 
 def BookingPage(request):
-    owner = request.user.owner 
+    owner = request.user.owner
 
     if request.method == 'POST':
         form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.owner = owner  
+            booking.owner = owner
 
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
+                # Check room availability only for Pet Hotel
+                available_rooms = Room.objects.all()
+                for room in available_rooms:
+                    overlapping_bookings = Booking.objects.filter(
+                        room=room,
+                        checkin__lte=booking.checkout,
+                        checkout__gte=booking.checkin,
+                        service='Pet Hotel'  # Check only for Pet Hotel service
+                    ).exists()
+                    if not overlapping_bookings:
+                        booking.room = room
+                        break
+                else:
+                    messages.error(request, "No rooms are available for the selected dates.")
+                    context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                    return render(request, 'bookingpage.html', context)
+
             else:
                 booking.checkin = None
                 booking.checkout = None
 
-            available_rooms = Room.objects.all()
-            for room in available_rooms:
-                overlapping_bookings = Booking.objects.filter(
-                    room=room,
-                    checkin__lte=booking.checkout,
-                    checkout__gte=booking.checkin
-                ).exists()
-                if not overlapping_bookings:
-                    booking.room = room
-                    break
-            else:
-                messages.error(request, "No rooms are available for the selected dates.")
-                context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
-                return render(request, 'bookingpage.html', context)            
-
             booking.save()
             form.save_m2m()
-            messages.success(request, f'Booking has been updated')
+            messages.success(request, 'Booking has been updated')
             context = {'form': form, 'booking': booking}
             return render(request, 'bookingpage.html', context)
         else:
@@ -111,7 +113,6 @@ def BookingPage(request):
 
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
-
 
 
 from django.shortcuts import render, get_object_or_404, redirect
