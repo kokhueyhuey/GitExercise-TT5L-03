@@ -14,7 +14,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
 from .forms import BookingForm
-
+import datetime
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.edit import UpdateView
@@ -79,39 +79,37 @@ def BookingPage(request):
             if booking.service in ['Pet Hotel', 'Pet Daycare']:
                 booking.date = None
                 booking.time = None
+                available_rooms = Room.objects.all()
+                for room in available_rooms:
+                    overlapping_bookings = Booking.objects.filter(
+                        room=room,
+                        checkin__lte=booking.checkout,
+                        checkout__gte=booking.checkin
+                    ).exists()
+                    if not overlapping_bookings:
+                        booking.room = room
+                        break
+                else:
+                    messages.error(request, "No rooms are available for the selected dates.")
+                    context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                    return render(request, 'bookingpage.html', context)
             else:
                 booking.checkin = None
                 booking.checkout = None
 
-            available_rooms = Room.objects.all()
-            for room in available_rooms:
-                overlapping_bookings = Booking.objects.filter(
-                    room=room,
-                    checkin__lte=booking.checkout,
-                    checkout__gte=booking.checkin
-                ).exists()
-                if not overlapping_bookings:
-                    booking.room = room
-                    break
-            else:
-                messages.error(request, "No rooms are available for the selected dates.")
-                context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
-                return render(request, 'bookingpage.html', context)            
-
             booking.save()
             form.save_m2m()
-            messages.success(request, f'Booking has been updated')
+            messages.success(request, 'Booking has been updated')
             context = {'form': form, 'booking': booking}
             return render(request, 'bookingpage.html', context)
         else:
             print(form.errors)
     else:
         form = BookingForm(owner)
+    
     bookings = Booking.objects.filter(owner=owner)
-
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
-
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -164,7 +162,36 @@ def ownerpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
 #     return render(request, 'admin_petprofile.html', {'booking': booking})
 
+def CalendarPage(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner)
 
+    # Prepare events data for the calendar
+    events = []
+    for booking in bookings:
+        if booking.service in ['Pet Hotel', 'Pet Daycare'] and booking.date:
+            start = booking.date.strftime('%Y-%m-%d')
+            end = (booking.date + timedelta(days=1)).strftime('%Y-%m-%d')  # End date is exclusive
+        elif booking.checkin and booking.checkout:
+            start = booking.checkin.strftime('%Y-%m-%d') + 'T' + booking.checkin.strftime('%H:%M:%S')
+            end = booking.checkout.strftime('%Y-%m-%d') + 'T' + booking.checkout.strftime('%H:%M:%S')
+        else:
+            continue  # Skip this booking if required fields are missing
+
+        events.append({
+            'title': booking.service,
+            'start': start,
+            'end': end,
+            'backgroundColor': '#fdd8de',  # Adjust colors as per your preference
+            'borderColor': '#790619',
+            'textColor': '#790619'
+        })
+    
+    context = {
+        'events': events  # Pass events data to the template
+    }
+    
+    return render(request, 'calendar.html', context)
 
 def PetprofilePage(request):
     try:
