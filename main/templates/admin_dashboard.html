@@ -110,6 +110,23 @@
             text-align: center; 
             margin-top: 20px;
         }
+        .button-tt {
+            background-color: rgb(102, 58, 60);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 20px; 
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button-tt:hover {
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
+        }
     
         .button {
             background-color: rgb(102, 58, 60);
@@ -184,6 +201,9 @@
 </head>
 <body>
     <h1 class="dashb">Admin Dashboard</h1>
+    <a href="{% url 'timetable' %}" class="button-tt"><i class="fas fa-arrow-left"></i> Timetable</a>
+
+
     <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Customer bookings</h2>
 <form method="GET" action="" class="sorting-form">
@@ -195,7 +215,6 @@
     </select>
     <button type="submit" class="sort-button">Sort</button>
 </form>
-
 <table class="a">
     <thead>
         <tr>

@@ -3,6 +3,7 @@ from . import views
 from .views import AdminPage, BookingUpdateView
 urlpatterns = [
     path('admin_dashboard/', views.AdminPage, name="admin_dashboard"),
+    path('timetable/', views.timetable, name="timetable"),
     path('profile/', views.profilePage, name="profile"),
     path('petprofile/', views.PetprofilePage, name="petprofile"),
     path('edit_pet/<int:pet_id>', views.edit_pet, name="edit_pet"),
