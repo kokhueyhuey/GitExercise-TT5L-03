@@ -8,28 +8,28 @@ from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking, Room
-
-from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
 from datetime import datetime, time, timedelta
 from django.utils import timezone
 from django.utils.timezone import now, localtime
 
+from django.shortcuts import render
+from django.utils.timezone import localtime
+from datetime import datetime, timedelta
+from .models import Booking
 
-def generate_time_slots(start_time, end_time, slot_duration):
-    slots = []
-    current_time = start_time
-    while current_time < end_time:
-        slots.append(current_time.strftime("%H:%M"))
-        current_time += slot_duration
-    return slots
+def get_week_dates(week_offset):
+    today = datetime.today()
+    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+    return [start_of_week + timedelta(days=i) for i in range(7)]
 
-def get_week_dates(offset=0):
-    today = localtime(now()).date()
-    start_of_week = today - timedelta(days=today.weekday())
-    start_of_week += timedelta(weeks=offset)
-    return [start_of_week + timedelta(days=i) for i in range(6)]  # Monday to Saturday
+def generate_time_slots(start, end, delta):
+    times = []
+    while start < end:
+        times.append(start.strftime('%H:%M'))
+        start += delta
+    return times
 
 def timetable(request):
     if request.method == 'POST':
@@ -44,21 +44,33 @@ def timetable(request):
     for day in week_dates:
         day_schedule = []
         for hour in hours:
-            slot_datetime = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
-            booking = Booking.objects.filter(date=day, time=slot_datetime.time()).first()
+            slot_time = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
+            booking = Booking.objects.filter(date=day, time=slot_time.time(), service__in=['Hair Grooming', 'Bath and Dry']).first()
 
             is_available = booking is None
-            day_schedule.append((slot_datetime, is_available, booking))
+            day_schedule.append((slot_time, is_available, booking))
         timetable.append((day, day_schedule))
+    bookings = Booking.objects.filter(service__in=['Hair Grooming', 'Bath and Dry']).order_by('date', 'time')
+    timetable = {}
+    for booking in bookings:
+        date = booking.date
+        time = booking.time.strftime('%H:%M')
+        if date not in timetable:
+            timetable[date] = {}
+        timetable[date][time] = booking
+    hours = sorted(set(booking.time.strftime('%H:%M') for booking in bookings))
+
 
     context = {
         'timetable': timetable,
+        'bookings':bookings,
         'week_offset': week_offset,
         'display_monday': week_dates[0],
         'display_today': localtime().date(),
         'hours': hours,
     }
     return render(request, 'timetable.html', context)
+
 
 
 
