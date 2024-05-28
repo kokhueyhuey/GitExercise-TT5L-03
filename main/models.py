@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+import random
 # import datetime
 
 # Create your models here.
+
 class Owner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, blank=True)
@@ -27,9 +29,17 @@ class Pet(models.Model):
     def __str__(self):
         return self.name    
     
+class Room(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name    
+
+    
 class Booking(models.Model):
     owner = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE)
     pet = models.ManyToManyField(Pet)
+    room = models.ForeignKey(Room, null=True, on_delete=models.CASCADE)
     date = models.DateField(blank=True, null=True)
     time = models.TimeField(blank=True, null=True)
     SERVICE_CHOICES = [
@@ -49,5 +59,7 @@ class Booking(models.Model):
     def __str__(self):
         return f'{self.owner.user.username} - {self.date} {self.time}'      
     
-    checkin = models.DateTimeField(null=True, blank=True)
-    checkout = models.DateTimeField(null=True, blank=True)   
+    checkin = models.DateField(null=True, blank=True)
+    checkout = models.DateField(null=True, blank=True)
+
+
