@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .room-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        text-align: right; /* Center the room list */
+        margin-top: 20px; /* Add top margin */
+        margin-right: 30px;
+
+    }
+
+    .room-list li {
+        display: inline-block;
+        margin-right: 10px;
+        background-color: #f0f0f0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .room-list li a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .room-list li a:hover {
+        color: #0066cc;
+    }
+
+    .room-name {
+        color: #333; /* Set the text color */
+        font-size: 2em; /* Set the font size */
+        margin-top: 10px; /* Add top margin */
+        margin-left: 15%;
+        font-weight: bold; /* Make the text bold */
+        text-transform: uppercase; /* Transform text to uppercase */
+    }
+
+    #calendar-container {
+        width: 70% !important; /* Adjust the width as needed */
+        margin: 20px auto !important; /* Center the calendar horizontally and add top margin */
+        padding: 20px !important; /* Optional padding */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; /* Optional shadow for styling */
+        background-color: #ffffffc3 !important; /* Background color for better contrast */
+        border-radius: 10px !important; /* Rounded corners */
+    }
+
+    #calendar {
+        width: 100% !important; /* Ensure the calendar takes full width of the container */
+        height: 600px !important; /* Set a specific height */
+        max-width: 100% !important; /* Ensure it doesn't exceed the container's width */
+    }
+</style>
+
+<ul class="room-list">
+    {% for room in rooms %}
+        <li>
+            <a href="{% url 'room_detail' room.id %}">Room {{ room.name }}</a>
+            <!-- Display other room information if needed -->
+        </li>
+    {% endfor %}
+</ul>
+
+<h1 class="room-name">Room {{ room.name }}</h1>
+<div id="calendar-container">
+    <div id="calendar"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs"></script>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: {
+                url: '{% url "get_room_events" room.id %}',
+                method: 'GET',
+                failure: function() {
+                    alert('There was an error while fetching events!');
+                },
+                color: 'green',   // a non-ajax option
+                textColor: 'black' // a non-ajax option
+            },
+            eventDisplay: 'auto',
+            // You can add more configuration options here as needed
+        });
+    
+        calendar.render();
+    });
+
+</script>     -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: '{% url "get_room_events" room.id %}',  // URL to fetch events from Django view
+            eventDisplay: 'auto',
+            eventClick: function(info) {
+                // Open a modal or display the details when an event is clicked
+                const details = info.event.extendedProps.details;
+                if (details) {
+                    let message = 'Booking Details:\n';
+                    message += `Booking ID: ${details.id}\n`;
+                    message += `Checkin: ${details.Checkin}\n`;
+                    message += `Checkout: ${details.Checkout}\n`;
+                    message += `Pets: ${details.Pets}\n`;
+                    message += `Owner: ${details.Owner}\n`;
+                    message += `Phone Number: ${details.ContactNumber}\n`;
+
+
+    
+                    alert(message.trim());  // Display details in an alert (replace with modal logic if needed)
+                }
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+    
+{% endblock %}
