@@ -41,7 +41,17 @@ class Booking(models.Model):
     pet = models.ManyToManyField(Pet)
     room = models.ForeignKey(Room, null=True, on_delete=models.CASCADE)
     date = models.DateField(blank=True, null=True)
-    time = models.TimeField(blank=True, null=True)
+    TIME_CHOICES = [
+        ('09:00', '9:00'),
+        ('10:00', '10:00'),
+        ('11:00', '11:00'),
+        ('12:00', '12:00'),
+        ('14:00', '2:00'),
+        ('15:00', '3:00'),
+        ('16:00', '4:00'),
+        ('17:00', '5:00'),
+    ]
+    time = models.CharField(max_length=5, choices=TIME_CHOICES, blank=True, null=True)
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
         ('Bath and Dry', 'Bath and Dry'),
