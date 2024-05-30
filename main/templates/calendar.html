@@ -11,51 +11,76 @@
 
 <style>
     #calendar-container {
-      width: 50%; /* Adjust the width as needed */
-      margin: 0 auto; /* Center the calendar horizontally */
-      padding: 20px; /* Optional padding */
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for styling */
+        width: 70%; /* Adjust the width as needed */
+        margin: 40px auto; /* Center the calendar horizontally and add top margin */
+        padding: 20px; /* Optional padding */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for styling */
+        background-color: #ffffffc3; /* Background color for better contrast */
+        border-radius: 10px; /* Rounded corners */
     }
-    
+
     #calendar {
-      max-width: 100%;
+        width: 100%; /* Ensure the calendar takes full width of the container */
+        height: 600px; /* Set a specific height */
+        max-width: 100%; /* Ensure it doesn't exceed the container's width */
     }
+    /* .fc-event-title {
+        color: black; /* Change to the color you prefer */
+    
+    
 </style>
 
+<!-- <div id="external-events">
+  <h4 class="mb-4">Running Events</h4>
+  {% for booking in bookings %}
+    <div class="fc-event">
+        <h3>{{ booking.service }}</h3>
+        <p>{{ booking.id }}</p>
+        <p>From: {{ booking.checkin }}</p>
+        <p>To: {{ booking.checkout }}</p>
+    </div>
+  {% empty %}
+    <p>No Running Events Found</p>
+  {% endfor %}
+</div> -->
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
-      events: [
-        {
-          title: 'Pet Hotel',
-          start: dayjs().add(5, 'day').format('YYYY-MM-DD'),
-          end: dayjs().add(9, 'day').format('YYYY-MM-DD'), // Adjusted end date to be exclusive
-          backgroundColor: '#fdd8de',
-          borderColor: '#790619',
-          textColor: '#790619'
-        },
-        {
-          title: 'Grooming',
-          start: dayjs().add(1, 'day').format('YYYY-MM-DD') + 'T08:00:00',
-          end: dayjs().add(1, 'day').format('YYYY-MM-DD') + 'T12:00:00',
-          backgroundColor: '#cfe0fc',
-          borderColor: '#0a47a9',
-          textColor: '#0a47a9'
-        },
-        {
-          title: 'Bath and Dry',
-          start: dayjs().add(2, 'day').format('YYYY-MM-DD') + 'T11:00:00',
-          end: dayjs().add(2, 'day').format('YYYY-MM-DD') + 'T14:00:00',
-          backgroundColor: '#292929',
-          borderColor: '#292929',
-          textColor: '#f5f5f5'
+      events: '{% url "all_bookings" %}',  // URL to fetch events from Django view
+      eventDisplay: 'auto',
+      eventClick: function(info) {
+        // Open a modal or display the details when an event is clicked
+        const details = info.event.extendedProps.details;
+        if (details) {
+          let message = 'Booking Details:\n';
+
+          if (details.Service === 'Hair Grooming' || details.Service === 'Bath and Dry') {
+            message += `BOOKINGID: ${details.id}\n`;
+            message += `Service: ${details.Service}\n`;
+            message += `Pet: ${details.Pets}\n`;
+            message += `Date: ${details.Date}\n`;
+            message += `Time: ${details.Time}\n`;
+          } else if (details.Service === 'Pet Hotel' || details.Service === 'Pet Daycare') {
+            message += `BOOKINGID: ${details.id}\n`;
+            message += `Service: ${details.Service}\n`;
+            message += `Checkin: ${details.Checkin}\n`;
+            message += `Checkout: ${details.Checkout}\n`;
+            message += `Pet: ${details.Pets}\n`;
+            if (details.Room && details.Room.name) {
+              message += `Room Name: ${details.Room.name}\n`;
+            }
+          }
+
+          alert(message.trim());  // Display details in an alert (replace with modal logic if needed)
         }
-      ]
+      }
     });
 
     calendar.render();
-  });
+});
 </script>
+
 {% endblock %}

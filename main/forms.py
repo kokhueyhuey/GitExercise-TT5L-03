@@ -25,6 +25,11 @@ class PetForm(forms.ModelForm):
         model = Pet
         fields = ['name','age','species','breed','profile_pic']
 
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name']
+
 class BookingForm(forms.ModelForm):
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
@@ -56,21 +61,23 @@ class BookingForm(forms.ModelForm):
 
         if service in ['Pet Hotel', 'Pet Daycare']:
             if not checkin:
-                self.add_error('checkin', 'Check-in date is required for Pet Hotel and Pet Daycare services.')
+                self.add_error('checkin', 'Check-in time is required for Pet Hotel and Pet Daycare services.')
             if not checkout:
-                self.add_error('checkout', 'Check-out date is required for Pet Hotel and Pet Daycare services.')
+                self.add_error('checkout', 'Check-out time is required for Pet Hotel and Pet Daycare services.')
 
-            if checkin and checkout:
-                available_rooms = Room.objects.all()
-                for room in available_rooms:
-                    overlapping_bookings = Booking.objects.filter(
-                        room=room,
-                        checkin__lt=checkout,
-                        checkout__gt=checkin
-                    ).exists()
+        pet = cleaned_data.get('pet')
+        if pet and checkin and checkout:
+            available_rooms = Room.objects.all()
+            for room in available_rooms:
+                overlapping_bookings = Booking.objects.filter(
+                    room=room,
+                    checkin__lt=checkout,
+                    checkout__gt=checkin
+                ).exists()
 
-                    if not overlapping_bookings:
-                        cleaned_data['room'] = room
-                        return cleaned_data
+                if not overlapping_bookings :
+                    self.cleaned_data['room'] = room
+                    return cleaned_data
 
+        
         return cleaned_data
