@@ -1,142 +1,74 @@
 {% extends 'base.html' %}
 {% load templatetags %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <title>Timetable</title>
-    <style>
-        body {
-            text-align: center;
-        }
 
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin: 20px auto;
-        }
-
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-       .available {
-            background-color: #dff0d8;
-        }
-
-       .unavailable {
-            background-color: #f2dede;
-        }
-       .timetable {
-            text-align: center; 
-            margin-top: 20px;
-            margin-bottom: 50px;
-        }
-
-
-       .btn-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-       .btn-wrapper {
-            text-align: center;
-        }
-
-       .btn {
-            padding: 8px 16px;
-            cursor: pointer;
-            border: none;
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 4px;
-            margin: 0 5px;
-        }
-
-       .btn:hover {
-            color: white;
-            background-color: #0056b3;
-        }
-       .go-back-btn {
-            text-align: left;
-            float: left;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-       .fas {
-            margin-right: 5px;
-        }
-    </style>
-</head>
-<body>
-<a href="{% url 'admin_dashboard' %}" class="btn go-back-btn"><i class="fas fa-arrow-left"></i> Go Back</a>
-<h1 class="timetable">Timetable</h1>
-<div class="btn-container">
-    <div class="btn-wrapper">
-        <form action="{% url 'timetable' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="week_offset" value="{{ week_offset|add:"-1" }}">
-            <button type="submit" class="btn">Last Week</button>
-        </form>
-    </div>
-    <h2 style="text-align: center; margin: 0 10px;">Today's Date: {{ display_today|date:"l, M d" }}</h2>
-    <div class="btn-wrapper">
-        <form action="{% url 'timetable' %}" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="week_offset" value="{{ week_offset|add:"1" }}">
-            <button type="submit" class="btn">Next Week</button>
-        </form>
-    </div>
+<div id="calendar-container">
+    <div id="calendar"></div>
 </div>
-<table>
-    <thead>
-        <tr>
-            <th>Time Slot</th>
-            {% for day in days %}
-                <th>{{ day|date:"D, M d" }}</th>
-            {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for hour in hours %}
-            {% if hour == "13:00" %}
-                <tr>
-                    <td>{{ hour }}</td>
-                    <td colspan="{{ days|length }}">Lunch Break 1 PM - 2 PM</td>
-                </tr>
-            {% else %}
-            <tr>
-                <td>{{ hour }}</td>
-                {% for day in days %}
-                    <td>
-                        {% if day_bookings|get_value:day|get_value:hour %}
-                            {% for booking in day_bookings|get_value:day|get_value:hour %}
-                                Service: {{ booking.service }} ({{ booking.owner }})
-                                <br>
-                            {% empty %}
-                                <span class="available">Available</span>
-                            {% endfor %}
-                        {% else %}
-                            <span class="available">Available</span>
-                        {% endif %}
-                    </td>
-                {% endfor %}
-            </tr>
-            {% endif %}
-        {% endfor %}
-    </tbody>
-</table>
-</body>
-</html>
+
+<script src="https://cdn.jsdelivr.net/npm/dayjs"></script>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+
+<style>
+    #calendar-container {
+        width: 70%;
+        margin: 40px auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffffc3;
+        border-radius: 10px;
+    }
+
+    #calendar {
+        width: 100%;
+        height: calc(100vh - 200px); /* Adjust height to fit the viewport */
+    }
+
+    .fc-event-title {
+        color: black;
+        font-size: larger;
+    }
+
+    /* Increase row height */
+    .fc-timegrid-slot {
+        height: 50px !important; /* Adjust the height value as needed */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            slotDuration: '01:00:00',
+            slotMinTime: '09:00:00',
+            slotMaxTime: '18:00:00',
+            slotLabelFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                meridian: 'short'
+            },
+            allDaySlot: false,
+            height: 'auto', /* Adjusts the height of the calendar to fit its container */
+            expandRows: true, /* Ensures all rows have the same height */
+            contentHeight: 'auto', /* Adjusts the height of the calendar content */
+            events: [],
+            eventClick: function(info) {
+                alert(info.event.extendedProps.description);
+            }
+        });
+
+        calendar.render();
+
+        fetch("{% url 'get_booking' %}")
+        .then(response => response.json())
+        .then(events => {
+            events.forEach(event => {
+                calendar.addEvent(event);
+            });
+        });
+    });
+</script>
 
 {% endblock %}

@@ -25,6 +25,11 @@ class PetForm(forms.ModelForm):
         model = Pet
         fields = ['name','age','species','breed','profile_pic']
 
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name']
+
 class BookingForm(forms.ModelForm):
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),

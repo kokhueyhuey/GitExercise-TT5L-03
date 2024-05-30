@@ -10,120 +10,24 @@ from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, Boo
 from .models import Pet, Owner, Booking, Room
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
-from datetime import datetime, time, timedelta, date
-from django.utils import timezone
-from django.utils.timezone import now, localtime
-from django.shortcuts import render, get_object_or_404
+from .forms import BookingForm
+import datetime
+from datetime import timedelta
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic.edit import UpdateView
+from .models import Booking, Owner
+from .forms import BookingForm, RoomForm
 
-def generate_time_slots(start_time, end_time, slot_duration):
-    slots = []
-    current_time = start_time
-    while current_time < end_time:
-        slots.append(current_time.strftime("%H:%M"))
-        current_time += slot_duration
-    return slots
+# def room_list(request):
+#     rooms = Room.objects.all()
+#     room_id_1 = get_object_or_404(Room, pk=1)  # Fetch room with id=1
+#     return render(request, 'room_list.html', {'room_id_1': room_id_1, 'rooms': rooms})
 
-def get_week_dates(offset=0):
-    today = localtime(now()).date()
-    start_of_week = today - timedelta(days=today.weekday())
-    start_of_week += timedelta(weeks=offset)
-    return [start_of_week + timedelta(days=i) for i in range(7)]  # Monday to Saturday
-
-def timetable(request):
-    if request.method == 'POST':
-        week_offset = int(request.POST.get('week_offset', 0))
-    else:
-        week_offset = int(request.GET.get('week_offset', 0))
-
-    week_dates = get_week_dates(week_offset)
-    times = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
-
-    # Create a dictionary of bookings for each day
-    bookings = Booking.objects.all()
-    day_bookings = {}
-    for day in week_dates:
-        day_bookings[day] = {}
-        for time in times:
-            day_bookings[day][time] = [booking for booking in bookings if booking.date == day and booking.time == time]
-
-    context = {
-        'week_offset': week_offset,
-        'display_monday': week_dates[0],
-        'display_today': date.today(),
-        'hours': times,
-        'days': week_dates,
-        'day_bookings': day_bookings,
-    }
-    return render(request, 'timetable.html', context)
-
-
-
-
-
-
-
-# from django.shortcuts import render
-# from django.utils.timezone import localtime
-# from datetime import datetime, timedelta
-# from .models import Booking
-
-# def get_week_dates(week_offset):
-#     today = datetime.today()
-#     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
-#     return [start_of_week + timedelta(days=i) for i in range(7)]
-
-# def generate_time_slots(start, end, delta):
-#     times = []
-#     while start < end:
-#         times.append(start.strftime('%H:%M'))
-#         start += delta
-#     return times
-
-# def timetable(request):
-#     if request.method == 'POST':
-#         week_offset = int(request.POST.get('week_offset', 0))
-#     else:
-#         week_offset = int(request.GET.get('week_offset', 0))
-
-#     week_dates = get_week_dates(week_offset)
-#     timetable = []
-#     hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
-
-#     for day in week_dates:
-#         day_schedule = []
-#         for hour in hours:
-#             slot_time = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
-#             booking = Booking.objects.filter(date=day, time=slot_time.time(), service__in=['Hair Grooming', 'Bath and Dry']).first()
-
-#             is_available = booking is None
-#             day_schedule.append((slot_time, is_available, booking))
-#         timetable.append((day, day_schedule))
-#     bookings = Booking.objects.filter(service__in=['Hair Grooming', 'Bath and Dry']).order_by('date', 'time')
-#     timetable = {}
-#     for booking in bookings:
-#         date = booking.date
-#         time = booking.time.strftime('%H:%M')
-#         if date not in timetable:
-#             timetable[date] = {}
-#         timetable[date][time] = booking
-#     hours = sorted(set(booking.time.strftime('%H:%M') for booking in bookings))
-
-
-#     context = {
-#         'timetable': timetable,
-#         'bookings':bookings,
-#         'week_offset': week_offset,
-#         'display_monday': week_dates[0],
-#         'display_today': localtime().date(),
-#         'hours': hours,
-#     }
-#     return render(request, 'timetable.html', context)
-
-
-
-
+    
 def AdminPage(request):
+    rooms = Room.objects.all()
+
     if request.method == 'POST':
         booking_id = request.POST.get('booking_id')
         new_status = request.POST.get('status')
@@ -152,6 +56,7 @@ def AdminPage(request):
         'completed_bookings': completed_bookings,
         'cancelled_bookings': cancelled_bookings,
         'owners': owners,
+        'rooms': rooms,
     }
     return render(request, 'admin_dashboard.html', context)
 
@@ -170,10 +75,7 @@ class BookingUpdateView(UpdateView):
 
 
 def BookingPage(request):
-    if request.user.is_authenticated:
-        owner = request.user.owner
-    else:
-        owner = None
+    owner = request.user.owner
 
     if request.method == 'POST':
         form = BookingForm(owner, request.POST)
@@ -184,12 +86,14 @@ def BookingPage(request):
             if booking.service == 'Pet Hotel':
                 booking.date = None
                 booking.time = None
+                # Check room availability only for Pet Hotel
                 available_rooms = Room.objects.all()
                 for room in available_rooms:
                     overlapping_bookings = Booking.objects.filter(
                         room=room,
                         checkin__lte=booking.checkout,
-                        checkout__gte=booking.checkin
+                        checkout__gte=booking.checkin,
+                        service='Pet Hotel'  # Check only for Pet Hotel service
                     ).exists()
                     if not overlapping_bookings:
                         booking.room = room
@@ -198,16 +102,14 @@ def BookingPage(request):
                     messages.error(request, "No rooms are available for the selected dates.")
                     context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
                     return render(request, 'bookingpage.html', context)
-            elif booking.service in ['Pet Daycare']:
+
+            else:
                 booking.checkin = None
                 booking.checkout = None
-            else:
-                # handle other services
-                pass
 
             booking.save()
             form.save_m2m()
-            messages.success(request, f'Booking has been updated')
+            messages.success(request, 'Booking has been updated')
             context = {'form': form, 'booking': booking}
             return render(request, 'bookingpage.html', context)
         else:
@@ -218,8 +120,6 @@ def BookingPage(request):
 
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
-
-
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Booking
@@ -254,6 +154,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.edit import UpdateView
 from .models import Booking
 from .forms import BookingForm
+from django.http import JsonResponse 
 
 
 
@@ -270,8 +171,132 @@ def ownerpf(request, booking_id):
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
 #     return render(request, 'admin_petprofile.html', {'booking': booking})
+def timetable(request):
+    
+    bookings = Booking.objects.all()
+    context = {
+        "bookings": bookings,
+    }
+    return render(request, 'timetable.html', context)
+
+def get_booking(request):
+    bookings = Booking.objects.filter(service='Hair Grooming')
+
+    events = []
+    for booking in bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+        }
+        events.append(event)
+    return JsonResponse(events, safe=False)
+def CalendarPage(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner, )
+    context = {
+        "bookings": bookings,
+    }
+    return render(request, 'calendar.html', context)
+
+def all_bookings(request):
+    owner = request.user.owner
+    bookings = Booking.objects.filter(owner=owner)
+    out = []
+    for booking in bookings:
+        if booking.service in ['Hair Grooming', 'Bath and Dry']:
+            if booking.date and booking.time:
+                pets = booking.pet.all()  # Fetch all pets associated with this booking
+                pet_names = ', '.join([pet.name for pet in pets])
+                out.append({
+                    'title': booking.service,
+                    'id': booking.id,
+                    'start': booking.date.strftime("%Y-%m-%dT%H:%M:%S"),
+                    'allDay': True,
+                    'color': '#FF6347' if booking.service == 'Hair Grooming' else '#4682B4',  # Different colors
+                    'details': {
+                        'id': booking.id,
+                        'Date': booking.date.strftime("%Y-%m-%d"),
+                        'Time': booking.time.strftime("%H:%M:%S"),
+                        'Service': booking.service,
+                        'Pets': pet_names,
+                    }
+                })
+        elif booking.service in ['Pet Hotel', 'Pet Daycare']:
+            if booking.checkin and booking.checkout:
+                room_data = {
+                    'name': booking.room.name,  # Example: Assuming 'room' has a 'name' field
+                }
+                pets = booking.pet.all()  # Fetch all pets associated with this booking
+                pet_names = ', '.join([pet.name for pet in pets])                
+                end_date = booking.checkout + timedelta(days=1)  # Adjust end date to be exclusive
+                out.append({
+                    'title': booking.service,
+                    'id': booking.id,
+                    'start': booking.checkin.strftime("%Y-%m-%dT%H:%M:%S"),
+                    'end': end_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                    'allDay': True,
+                    'color': '#32CD32' if booking.service == 'Pet Hotel' else '#FFD700',  # Different colors
+                    'details': {
+                        'id': booking.id,
+                        'Checkin': booking.checkin.strftime("%Y-%m-%d"),
+                        'Checkout': booking.checkout.strftime("%Y-%m-%d"),
+                        'Service': booking.service,
+                        'Room': room_data,
+                        'Pets': pet_names,
+                    }
+                })
+
+    return JsonResponse(out, safe=False)
+
+def room_detail(request, room_id=None):
+    room = get_object_or_404(Room, pk=room_id) if room_id else None
+    rooms = Room.objects.all()
+
+    context = {
+        'room': room,
+        'rooms': rooms,
+    }
+
+    return render(request, 'room_detail.html', context)
+
+def get_room_events(request, room_id):
+    bookings = Booking.objects.filter(room_id=room_id, service='Pet Hotel')
+
+    events = []
+    for booking in bookings:
+        start_time = booking.checkin.strftime("%Y-%m-%dT%H:%M:%S") if booking.checkin else None
+        end_date = booking.checkout + timedelta(days=1)  # Adjust end date to be exclusive
+        pets = booking.pet.all()  # Fetch all pets associated with this booking
+        pet_names = ', '.join([pet.name for pet in pets]) 
+        room_data = {
+            'name': booking.room.name,  # Example: Assuming 'room' has a 'name' field
+        }
+
+        title = f"Booking ID: {booking.id} - {pet_names}"   
+        
+        events.append({
+            'id': booking.id,
+            'title': title,
+            'start': start_time,
+            'end': end_date.strftime("%Y-%m-%dT%H:%M:%S"),
+            'allDay': True,
+            'color': '#32CD32',
+            'details': {
+                'id': booking.id,
+                'Checkin': booking.checkin.strftime("%Y-%m-%d"),
+                'Checkout': booking.checkout.strftime("%Y-%m-%d"),
+                'Room': room_data,
+                'Pets': pet_names,
+                'Owner' : booking.owner.user.username,
+                'ContactNumber' : booking.owner.phone_number
+
+                # Add more details as needed
+            }
 
 
+        })
+
+    return JsonResponse(events, safe=False)
 
 def PetprofilePage(request):
     try:
