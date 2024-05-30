@@ -196,17 +196,53 @@
         .button-cancel:hover {
             background-color: darkred;
         }
+        .room-list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-align: right;
+            margin-top: 20px; /* Add top margin */
+            margin-bottom: 20px;
+            margin-right: 30px;
+        }
+
+        .room-list li {
+            display: inline-block;
+            margin-right: 10px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .room-list li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .room-list li a:hover {
+            color: #0066cc;
+        }
+
 
     </style>
 </head>
 <body>
     <h1 class="dashb">Admin Dashboard</h1>
-    <a href="{% url 'timetable' %}" class="button-tt"><i class="fas fa-arrow-left"></i> Timetable</a>
-
-
     <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Customer bookings</h2>
-<form method="GET" action="" class="sorting-form">
+    <ul class="room-list">
+        {% for room in rooms %}
+            <li>
+                <a href="{% url 'room_detail' room.id %}">Room {{ room.name }}</a>
+                <!-- Display other room information if needed -->
+            </li>
+        {% endfor %}
+    </ul>
+    
+
+    <form method="GET" action="" class="sorting-form">
     <label for="sort_by">Sort By:</label>
     <select name="sort_by" id="sort_by" class="sort-select">
         <option value="date">Date</option>
