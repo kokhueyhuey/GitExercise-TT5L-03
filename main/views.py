@@ -10,7 +10,7 @@ from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, Boo
 from .models import Pet, Owner, Booking, Room
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, date
 from django.utils import timezone
 from django.utils.timezone import now, localtime
 from django.shortcuts import render, get_object_or_404
@@ -28,7 +28,7 @@ def get_week_dates(offset=0):
     today = localtime(now()).date()
     start_of_week = today - timedelta(days=today.weekday())
     start_of_week += timedelta(weeks=offset)
-    return [start_of_week + timedelta(days=i) for i in range(6)]  # Monday to Saturday
+    return [start_of_week + timedelta(days=i) for i in range(7)]  # Monday to Saturday
 
 def timetable(request):
     if request.method == 'POST':
@@ -37,25 +37,23 @@ def timetable(request):
         week_offset = int(request.GET.get('week_offset', 0))
 
     week_dates = get_week_dates(week_offset)
-    timetable = []
-    hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
+    times = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
 
+    # Create a dictionary of bookings for each day
+    bookings = Booking.objects.all()
+    day_bookings = {}
     for day in week_dates:
-        day_schedule = []
-        for hour in hours:
-            slot_datetime = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
-            booking = Booking.objects.filter(date=day, time=slot_datetime.time()).first()
-
-            is_available = booking is None
-            day_schedule.append((slot_datetime, is_available, booking))
-        timetable.append((day, day_schedule))
+        day_bookings[day] = {}
+        for time in times:
+            day_bookings[day][time] = [booking for booking in bookings if booking.date == day and booking.time == time]
 
     context = {
-        'timetable': timetable,
         'week_offset': week_offset,
         'display_monday': week_dates[0],
-        'display_today': localtime().date(),
-        'hours': hours,
+        'display_today': date.today(),
+        'hours': times,
+        'days': week_dates,
+        'day_bookings': day_bookings,
     }
     return render(request, 'timetable.html', context)
 
@@ -63,66 +61,64 @@ def timetable(request):
 
 
 
-from datetime import datetime, time, timedelta
-from django.utils import timezone
-from django.utils.timezone import now, localtime
-
-from django.shortcuts import render
-from django.utils.timezone import localtime
-from datetime import datetime, timedelta
-from .models import Booking
-
-def get_week_dates(week_offset):
-    today = datetime.today()
-    start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
-    return [start_of_week + timedelta(days=i) for i in range(7)]
-
-def generate_time_slots(start, end, delta):
-    times = []
-    while start < end:
-        times.append(start.strftime('%H:%M'))
-        start += delta
-    return times
-
-def timetable(request):
-    if request.method == 'POST':
-        week_offset = int(request.POST.get('week_offset', 0))
-    else:
-        week_offset = int(request.GET.get('week_offset', 0))
-
-    week_dates = get_week_dates(week_offset)
-    timetable = []
-    hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
-
-    for day in week_dates:
-        day_schedule = []
-        for hour in hours:
-            slot_time = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
-            booking = Booking.objects.filter(date=day, time=slot_time.time(), service__in=['Hair Grooming', 'Bath and Dry']).first()
-
-            is_available = booking is None
-            day_schedule.append((slot_time, is_available, booking))
-        timetable.append((day, day_schedule))
-    bookings = Booking.objects.filter(service__in=['Hair Grooming', 'Bath and Dry']).order_by('date', 'time')
-    timetable = {}
-    for booking in bookings:
-        date = booking.date
-        time = booking.time.strftime('%H:%M')
-        if date not in timetable:
-            timetable[date] = {}
-        timetable[date][time] = booking
-    hours = sorted(set(booking.time.strftime('%H:%M') for booking in bookings))
 
 
-    context = {
-        'timetable': timetable,
-        'bookings':bookings,
-        'week_offset': week_offset,
-        'display_monday': week_dates[0],
-        'display_today': localtime().date(),
-        'hours': hours,
-    }
-    return render(request, 'timetable.html', context)
+# from django.shortcuts import render
+# from django.utils.timezone import localtime
+# from datetime import datetime, timedelta
+# from .models import Booking
+
+# def get_week_dates(week_offset):
+#     today = datetime.today()
+#     start_of_week = today - timedelta(days=today.weekday()) + timedelta(weeks=week_offset)
+#     return [start_of_week + timedelta(days=i) for i in range(7)]
+
+# def generate_time_slots(start, end, delta):
+#     times = []
+#     while start < end:
+#         times.append(start.strftime('%H:%M'))
+#         start += delta
+#     return times
+
+# def timetable(request):
+#     if request.method == 'POST':
+#         week_offset = int(request.POST.get('week_offset', 0))
+#     else:
+#         week_offset = int(request.GET.get('week_offset', 0))
+
+#     week_dates = get_week_dates(week_offset)
+#     timetable = []
+#     hours = generate_time_slots(datetime.strptime("09:00", "%H:%M"), datetime.strptime("18:00", "%H:%M"), timedelta(hours=1))
+
+#     for day in week_dates:
+#         day_schedule = []
+#         for hour in hours:
+#             slot_time = datetime.combine(day, datetime.strptime(hour, "%H:%M").time())
+#             booking = Booking.objects.filter(date=day, time=slot_time.time(), service__in=['Hair Grooming', 'Bath and Dry']).first()
+
+#             is_available = booking is None
+#             day_schedule.append((slot_time, is_available, booking))
+#         timetable.append((day, day_schedule))
+#     bookings = Booking.objects.filter(service__in=['Hair Grooming', 'Bath and Dry']).order_by('date', 'time')
+#     timetable = {}
+#     for booking in bookings:
+#         date = booking.date
+#         time = booking.time.strftime('%H:%M')
+#         if date not in timetable:
+#             timetable[date] = {}
+#         timetable[date][time] = booking
+#     hours = sorted(set(booking.time.strftime('%H:%M') for booking in bookings))
+
+
+#     context = {
+#         'timetable': timetable,
+#         'bookings':bookings,
+#         'week_offset': week_offset,
+#         'display_monday': week_dates[0],
+#         'display_today': localtime().date(),
+#         'hours': hours,
+#     }
+#     return render(request, 'timetable.html', context)
 
 
 
@@ -174,35 +170,40 @@ class BookingUpdateView(UpdateView):
 
 
 def BookingPage(request):
-    owner = request.user.owner 
+    if request.user.is_authenticated:
+        owner = request.user.owner
+    else:
+        owner = None
 
     if request.method == 'POST':
         form = BookingForm(owner, request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
-            booking.owner = owner  
+            booking.owner = owner
 
-            if booking.service in ['Pet Hotel', 'Pet Daycare']:
+            if booking.service == 'Pet Hotel':
                 booking.date = None
                 booking.time = None
-            else:
+                available_rooms = Room.objects.all()
+                for room in available_rooms:
+                    overlapping_bookings = Booking.objects.filter(
+                        room=room,
+                        checkin__lte=booking.checkout,
+                        checkout__gte=booking.checkin
+                    ).exists()
+                    if not overlapping_bookings:
+                        booking.room = room
+                        break
+                else:
+                    messages.error(request, "No rooms are available for the selected dates.")
+                    context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                    return render(request, 'bookingpage.html', context)
+            elif booking.service in ['Pet Daycare']:
                 booking.checkin = None
                 booking.checkout = None
-
-            available_rooms = Room.objects.all()
-            for room in available_rooms:
-                overlapping_bookings = Booking.objects.filter(
-                    room=room,
-                    checkin__lte=booking.checkout,
-                    checkout__gte=booking.checkin
-                ).exists()
-                if not overlapping_bookings:
-                    booking.room = room
-                    break
             else:
-                messages.error(request, "No rooms are available for the selected dates.")
-                context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
-                return render(request, 'bookingpage.html', context)            
+                # handle other services
+                pass
 
             booking.save()
             form.save_m2m()
