@@ -171,7 +171,25 @@ def ownerpf(request, booking_id):
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
 #     return render(request, 'admin_petprofile.html', {'booking': booking})
+def timetable(request):
+    
+    bookings = Booking.objects.all()
+    context = {
+        "bookings": bookings,
+    }
+    return render(request, 'timetable.html', context)
 
+def get_booking(request):
+    bookings = Booking.objects.filter(service='Hair Grooming')
+
+    events = []
+    for booking in bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+        }
+        events.append(event)
+    return JsonResponse(events, safe=False)
 def CalendarPage(request):
     owner = request.user.owner
     bookings = Booking.objects.filter(owner=owner, )
