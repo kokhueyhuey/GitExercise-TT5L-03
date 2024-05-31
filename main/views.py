@@ -102,7 +102,6 @@ def BookingPage(request):
                     messages.error(request, "No rooms are available for the selected dates.")
                     context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
                     return render(request, 'bookingpage.html', context)
-
             else:
                 booking.checkin = None
                 booking.checkout = None
@@ -116,10 +115,19 @@ def BookingPage(request):
             print(form.errors)
     else:
         form = BookingForm(owner)
+    
     bookings = Booking.objects.filter(owner=owner)
-
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
+
+def update_times(request):
+    service = request.GET.get('service')
+    date = request.GET.get('date')
+    
+    form = BookingForm(request.user.owner, initial={'service': service, 'date': date})
+    available_times = form.get_available_time_choices(date, service)
+    
+    return JsonResponse({'available_times': dict(available_times)})
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Booking
@@ -180,16 +188,28 @@ def timetable(request):
     return render(request, 'timetable.html', context)
 
 def get_booking(request):
-    bookings = Booking.objects.filter(service='Hair Grooming')
+    hair_grooming_bookings = Booking.objects.filter(service='Hair Grooming')
+    bath_and_dry_bookings = Booking.objects.filter(service='Bath and Dry')
 
     events = []
-    for booking in bookings:
+    for booking in hair_grooming_bookings:
         event = {
             "title": booking.service,
             "start": f"{booking.date}T{booking.time}",
+            "color": "green"  # assign green color to Hair Grooming bookings
         }
         events.append(event)
+
+    for booking in bath_and_dry_bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+            "color": "light blue"  # assign blue color to Bath and Dry bookings
+        }
+        events.append(event)
+
     return JsonResponse(events, safe=False)
+
 def CalendarPage(request):
     owner = request.user.owner
     bookings = Booking.objects.filter(owner=owner, )
@@ -216,7 +236,7 @@ def all_bookings(request):
                     'details': {
                         'id': booking.id,
                         'Date': booking.date.strftime("%Y-%m-%d"),
-                        'Time': booking.time.strftime("%H:%M:%S"),
+                        'Time': booking.time,
                         'Service': booking.service,
                         'Pets': pet_names,
                     }
