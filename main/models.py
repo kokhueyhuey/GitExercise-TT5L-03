@@ -50,8 +50,11 @@ class Booking(models.Model):
         ('15:00', '3:00'),
         ('16:00', '4:00'),
         ('17:00', '5:00'),
+        ('full_day', 'Full (7:00-19:00)'),
+        ('morning', 'Morning (7:00-12:00)'),
+        ('noon', 'Noon (13:00-19:00)'),
     ]
-    time = models.CharField(max_length=5, choices=TIME_CHOICES, blank=True, null=True)
+    time = models.CharField(max_length=10, choices=TIME_CHOICES, blank=True, null=True)
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
         ('Bath and Dry', 'Bath and Dry'),

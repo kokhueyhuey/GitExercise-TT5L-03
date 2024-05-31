@@ -85,6 +85,16 @@
     .time-choice:hover {
         background-color: #f0f0f0; /* Background color on hover */
     }
+    .time-choice.selected {
+        background-color: #63baf5; /* Change background color when selected */
+        color: #fff; /* Change text color when selected */
+    }
+    .time-choice:focus,
+    .time-choice:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
 </style>
 
 <div class="container">
@@ -110,6 +120,7 @@
                     <button type="button" class="time-choice btn btn-outline-primary" data-value="{{ choice.0 }}">{{ choice.1 }}</button>
                 {% endfor %}
             </div>
+            <p id="fully-booked-message" style="color: red; font-weight: bold;"></p>
             {{ form.time }}
         </div>     
         <div class="form-group hidden" id="checkin-field">
@@ -151,14 +162,22 @@ $(document).ready(function() {
                 success: function(data) {
                     var timeButtons = $('#time-buttons');
                     timeButtons.empty();
-                    $.each(data.available_times, function(key, value) {
-                        var button = $('<button></button>')
-                            .attr('type', 'button')
-                            .addClass('time-choice btn btn-outline-primary')
-                            .attr('data-value', key)
-                            .text(value);
-                        timeButtons.append(button);                    
-                    });
+                    
+                    if ($.isEmptyObject(data.available_times)) {
+                        // Display message when no time slots are available
+                        $('#fully-booked-message').text('All time slots are fully booked at this time.');
+                    } else {
+                        // Append available time slots as buttons
+                        $.each(data.available_times, function(key, value) {
+                            var button = $('<button></button>')
+                                .attr('type', 'button')
+                                .addClass('time-choice btn btn-outline-primary')
+                                .attr('data-value', key)
+                                .text(value);
+                            timeButtons.append(button);
+                        });
+                        $('#fully-booked-message').empty(); // Clear the message if slots are available
+                    }
                 }
             });
         }
@@ -168,7 +187,7 @@ $(document).ready(function() {
     function toggleFields() {
         var service = $('#id_service').val();
 
-        if (service === 'Pet Hotel' || service === 'Pet Daycare') {
+        if (service === 'Pet Hotel') {
             $('#date-field').addClass('hidden');
             $('#time-field').addClass('hidden');
             $('#checkin-field').removeClass('hidden');
@@ -182,18 +201,27 @@ $(document).ready(function() {
         }
     }
 
-    // Event listeners
+    // Event listener for time slot selection
     $(document).on('click', '.time-choice', function() {
+        // Remove 'selected' class from previously selected button (if any)
+        $('.time-choice').removeClass('selected');
+        
+        // Add 'selected' class to the clicked button
+        $(this).addClass('selected');
+        
         var selectedTime = $(this).data('value');
         $('#id_time').val(selectedTime);
     });
 
+    // Event listeners for service and date changes
     $('#id_service').change(toggleFields);
     $('#id_date').change(updateTimes);
+
     // Initial state setup
     toggleFields();
     updateTimes();
 });
+
 </script>
 
 {% endblock %}

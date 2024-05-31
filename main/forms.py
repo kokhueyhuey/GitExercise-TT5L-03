@@ -53,29 +53,42 @@ class BookingForm(forms.ModelForm):
     def __init__(self, owner, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
-        
+
         # Get the service and date from the initial data or POST data
         service = self.initial.get('service', self.data.get('service'))
         date = self.initial.get('date', self.data.get('date'))
-        
-        if service in ['Hair Grooming', 'Bath and Dry']:
-            self.fields['time'].required = True  # Make time field required for grooming and bath dry
-            # Fetch and set available time choices here if needed
-        else:
-            self.fields['time'].required = False 
 
+        if service in ['Hair Grooming', 'Bath and Dry', 'Pet Daycare']:
+            self.fields['time'].required = True
+            self.fields['time'].choices = self.get_available_time_choices(date, service)
+        else:
+            self.fields['time'].required = False
+            self.fields['time'].choices = [('', 'Select a time')]        
     def get_available_time_choices(self, date, service):
-        TIME_CHOICES = [
-            ('09:00', '9:00'),
-            ('10:00', '10:00'),
-            ('11:00', '11:00'),
-            ('12:00', '12:00'),
-            ('14:00', '2:00'),
-            ('15:00', '3:00'),
-            ('16:00', '4:00'),
-            ('17:00', '5:00'),
-        ]
-        
+        if not date:
+            # Return a default choice for the 'time' field when the 'date' is not provided
+            return [('', 'Select a time')]
+
+        if service == 'Hair Grooming' or service == 'Bath and Dry':
+            TIME_CHOICES = [
+                ('09:00', '9:00'),
+                ('10:00', '10:00'),
+                ('11:00', '11:00'),
+                ('12:00', '12:00'),
+                ('14:00', '2:00'),
+                ('15:00', '3:00'),
+                ('16:00', '4:00'),
+                ('17:00', '5:00'),
+            ]
+        elif service == 'Pet Daycare':
+            TIME_CHOICES = [
+                ('full_day', 'Full Day (7:00-19:00)'),
+                ('morning', 'Morning (7:00-12:00)'),
+                ('noon', 'Noon (13:00-19:00)'),
+            ]
+        else:
+            TIME_CHOICES = []
+
         if not date:
             return TIME_CHOICES
 
@@ -86,22 +99,29 @@ class BookingForm(forms.ModelForm):
                 limit = 2
             elif service == 'Bath and Dry':
                 limit = 3
-            else:
-                limit = float('inf')  # No limit for other services
-            
-            bookings = Booking.objects.filter(date=date, time=time[0], service=service)
-            if bookings.count() < limit:  
-                available_times.append(time)
-        
-        return available_times
+            elif service == 'Pet Daycare':
+                if time[0] == 'full_day':
+                    limit = 2
+                elif time[0] == 'morning':
+                    limit = 3
+                elif time[0] == 'noon':
+                    limit = 2
+                else:
+                    limit = float('inf')  # No limit for other services
 
+            bookings = Booking.objects.filter(date=date, time=time[0], service=service)
+            if bookings.count() < limit:
+                available_times.append(time)
+
+        return available_times
+    
     def clean(self):
         cleaned_data = super().clean()
         service = cleaned_data.get('service')
         checkin = cleaned_data.get('checkin')
         checkout = cleaned_data.get('checkout')
 
-        if service in ['Pet Hotel', 'Pet Daycare']:
+        if service in ['Pet Hotel']:
             if not checkin:
                 self.add_error('checkin', 'Check-in time is required for Pet Hotel and Pet Daycare services.')
             if not checkout:

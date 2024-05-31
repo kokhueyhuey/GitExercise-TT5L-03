@@ -223,16 +223,18 @@ def all_bookings(request):
     bookings = Booking.objects.filter(owner=owner)
     out = []
     for booking in bookings:
-        if booking.service in ['Hair Grooming', 'Bath and Dry']:
+        if booking.service in ['Hair Grooming', 'Bath and Dry','Pet Daycare']:
             if booking.date and booking.time:
                 pets = booking.pet.all()  # Fetch all pets associated with this booking
                 pet_names = ', '.join([pet.name for pet in pets])
+                color = '#FF6347' if booking.service == 'Hair Grooming' else '#4682B4' if booking.service == 'Bath and Dry' else 'yellow'
+
                 out.append({
                     'title': booking.service,
                     'id': booking.id,
                     'start': booking.date.strftime("%Y-%m-%dT%H:%M:%S"),
                     'allDay': True,
-                    'color': '#FF6347' if booking.service == 'Hair Grooming' else '#4682B4',  # Different colors
+                    'color': color,
                     'details': {
                         'id': booking.id,
                         'Date': booking.date.strftime("%Y-%m-%d"),
@@ -241,7 +243,7 @@ def all_bookings(request):
                         'Pets': pet_names,
                     }
                 })
-        elif booking.service in ['Pet Hotel', 'Pet Daycare']:
+        elif booking.service in ['Pet Hotel']:
             if booking.checkin and booking.checkout:
                 room_data = {
                     'name': booking.room.name,  # Example: Assuming 'room' has a 'name' field
@@ -255,7 +257,7 @@ def all_bookings(request):
                     'start': booking.checkin.strftime("%Y-%m-%dT%H:%M:%S"),
                     'end': end_date.strftime("%Y-%m-%dT%H:%M:%S"),
                     'allDay': True,
-                    'color': '#32CD32' if booking.service == 'Pet Hotel' else '#FFD700',  # Different colors
+                    'color': '#32CD32' ,  # Different colors
                     'details': {
                         'id': booking.id,
                         'Checkin': booking.checkin.strftime("%Y-%m-%d"),
