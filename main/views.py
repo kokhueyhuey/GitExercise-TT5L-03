@@ -4,13 +4,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login ,logout
-
 from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
 from .models import Pet, Owner, Booking, Room
-
-from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
 from .forms import BookingForm
@@ -86,7 +83,7 @@ def BookingPage(request):
             booking = form.save(commit=False)
             booking.owner = owner
 
-            if booking.service in ['Pet Hotel', 'Pet Daycare']:
+            if booking.service == 'Pet Hotel':
                 booking.date = None
                 booking.time = None
                 # Check room availability only for Pet Hotel
@@ -174,7 +171,25 @@ def ownerpf(request, booking_id):
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
 #     return render(request, 'admin_petprofile.html', {'booking': booking})
+def timetable(request):
+    
+    bookings = Booking.objects.all()
+    context = {
+        "bookings": bookings,
+    }
+    return render(request, 'timetable.html', context)
 
+def get_booking(request):
+    bookings = Booking.objects.filter(service='Hair Grooming')
+
+    events = []
+    for booking in bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+        }
+        events.append(event)
+    return JsonResponse(events, safe=False)
 def CalendarPage(request):
     owner = request.user.owner
     bookings = Booking.objects.filter(owner=owner, )
