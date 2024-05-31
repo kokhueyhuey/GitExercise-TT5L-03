@@ -25,6 +25,11 @@ class PetForm(forms.ModelForm):
         model = Pet
         fields = ['name','age','species','breed','profile_pic']
 
+class RoomForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name']
+
 class BookingForm(forms.ModelForm):
     SERVICE_CHOICES = [
         ('Hair Grooming', 'Hair Grooming'),
@@ -32,16 +37,26 @@ class BookingForm(forms.ModelForm):
         ('Pet Hotel', 'Pet Hotel'),
         ('Pet Daycare', 'Pet Daycare'),
     ]
+    TIME_CHOICES = [
+        ('09:00', '9:00'),
+        ('10:00', '10:00'),
+        ('11:00', '11:00'),
+        ('12:00', '12:00'),
+        ('14:00', '2:00'),
+        ('15:00', '3:00'),
+        ('16:00', '4:00'),
+        ('17:00', '5:00'),
+    ]
     service = forms.ChoiceField(choices=SERVICE_CHOICES)
+    time = forms.ChoiceField(choices=TIME_CHOICES)
     
     class Meta:
         model = Booking
         fields = ['pet', 'date', 'time', 'checkin', 'checkout', 'service']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
-            'time': forms.TimeInput(attrs={'type': 'time'}),
-            'checkin': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
-            'checkout': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d')}),
+            'date': forms.DateInput(attrs={'type': 'date', 'in': timezone.now().date().strftime('%Y-%m-%d')}),
+            'checkin': forms.DateInput(attrs={'type': 'date', 'in': timezone.now().date().strftime('%Y-%m-%d')}),
+            'checkout': forms.DateInput(attrs={'type': 'date', 'in': timezone.now().date().strftime('%Y-%m-%d')}),
         }
 
     def __init__(self, owner, *args, **kwargs):
