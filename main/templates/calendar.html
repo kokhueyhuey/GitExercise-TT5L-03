@@ -21,7 +21,6 @@
 
     #calendar {
         width: 100%; /* Ensure the calendar takes full width of the container */
-        height: 600px; /* Set a specific height */
         max-width: 100%; /* Ensure it doesn't exceed the container's width */
     }
     /* .fc-event-title {
@@ -51,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
       initialView: 'dayGridMonth',
       events: '{% url "all_bookings" %}',  // URL to fetch events from Django view
       eventDisplay: 'auto',
+      height: 'auto',  // Adjusts the height of the calendar to fit its container
+      contentHeight: 'auto',
       eventClick: function(info) {
         // Open a modal or display the details when an event is clicked
         const details = info.event.extendedProps.details;
