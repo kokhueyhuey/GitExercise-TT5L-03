@@ -227,7 +227,7 @@ def all_bookings(request):
             if booking.date and booking.time:
                 pets = booking.pet.all()  # Fetch all pets associated with this booking
                 pet_names = ', '.join([pet.name for pet in pets])
-                color = '#FF6347' if booking.service == 'Hair Grooming' else '#4682B4' if booking.service == 'Bath and Dry' else 'yellow'
+                color = '#FF6347' if booking.service == 'Hair Grooming' else '#4682B4' if booking.service == 'Bath and Dry' else '#f0e130'
 
                 out.append({
                     'title': booking.service,

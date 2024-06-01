@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
       initialView: 'dayGridMonth',
       events: '{% url "all_bookings" %}',  // URL to fetch events from Django view
       eventDisplay: 'auto',
+      height: 'auto',  // Adjusts the height of the calendar to fit its container
+      contentHeight: 'auto',
       eventClick: function(info) {
         // Open a modal or display the details when an event is clicked
         const details = info.event.extendedProps.details;
