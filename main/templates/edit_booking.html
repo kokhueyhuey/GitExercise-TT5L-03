@@ -142,9 +142,14 @@
                     </label>
                 </div>
                 <div class="form-group" id="time-field">
-                    <label for="id_time">Time:
+                    <label for="id_time">Time:</label>
+                    <div id="time-buttons">
+                        {% for choice in form.time.choices %}
+                            <button type="button" class="time-choice btn btn-outline-primary" data-value="{{ choice.0 }}">{{ choice.1 }}</button>
+                        {% endfor %}
+                    </div>
+                    <p id="fully-booked-message" style="color: red; font-weight: bold;"></p>
                     {{ form.time }}
-                    </label>
                 </div>
                 <div class="form-group hidden" id="checkin-field">
                     <label for="id_checkin">checkin:
@@ -161,7 +166,6 @@
                 </div>
             </form>
         </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const serviceField = document.querySelector('select[name="service"]');
@@ -188,6 +192,25 @@
             toggleFields();  
         });
     </script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        updateTimes(); // Call updateTimes function to load time choices
+
+        // Event listener for time slot selection
+        $(document).on('click', '.time-choice', function() {
+            // Remove 'selected' class from previously selected button (if any)
+            $('.time-choice').removeClass('selected');
+            
+            // Add 'selected' class to the clicked button
+            $(this).addClass('selected');
+            
+            var selectedTime = $(this).data('value');
+            $('#id_time').val(selectedTime);
+        });
+        serviceField.addEventListener('change', toggleFields);
+        toggleFields();  
+    });
+</script>
 
 </body>
 </html>
