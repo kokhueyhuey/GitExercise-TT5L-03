@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Rating Feedback</title>
+    <style>
+
+        .star-rating {
+            text-align: center;
+        }
+
+        
+        .stars {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .star {
+            font-size: 4em;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+        .star:hover,
+        .star.hover,
+        .star.selected {
+            color: #ffcc00;
+        }
+        #rating-value {
+            font-size: 1.5em;
+            color: #333;
+            font-family: 'Pacifico', cursive;
+        }
+        #comment {
+            width: 100%;
+            max-width: 400px;
+            height: 150px;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        #submit-rating {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #ffcc00;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #submit-rating:hover {
+            background-color: #333;
+            color: #ffcc00;
+        }
+
+        .feedback-list {
+            margin-top: 50px;
+        }
+
+        .feedback-items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .feedback-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px;
+            width: calc(33.33% - 20px); /* Adjust the width as needed */
+            box-sizing: border-box;
+            position: relative;
+            font-style: italic;
+            text-align: center; /* Center-align the text */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .feedback-item::before {
+            content: "“";
+            font-size: 3em;
+            color: #ccc;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .feedback-item::after {
+            content: "”";
+            font-size: 3em;
+            color: #ccc;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .feedback-item {
+                width: calc(50% - 20px); /* Adjust the width for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feedback-item {
+                width: 100%; /* Full width for even smaller screens */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="star-rating">
+        <h1>Rate Us</h1>
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <p id="rating-value"></p>
+        <textarea id="comment" placeholder="Leave a comment..."></textarea>
+    <div>
+        <button id="submit-rating">Submit Feedback</button>
+    </div>
+</div>
+
+
+    <div class="feedback-list">
+        <h2>All Feedback</h2>
+        <div class="feedback-items">
+    
+            {% for feedback in feedback %}
+            <div class="feedback-item">
+                <p><strong>Rating star:</strong> {{ feedback.rating }}</p>
+                <p> {{ feedback.comment }}</p>
+            </div>
+            {% empty %}
+                <p>No feedback yet.</p>
+            {% endfor %}
+        
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const stars = document.querySelectorAll('.star');
+            const ratingValue = document.getElementById('rating-value');
+            const submitButton = document.getElementById('submit-rating');
+            const commentField = document.getElementById('comment');
+            let selectedRating = 0;
+
+            stars.forEach(star => {
+                star.addEventListener('mouseover', handleMouseOver);
+                star.addEventListener('mouseout', handleMouseOut);
+                star.addEventListener('click', handleClick);
+            });
+
+            function handleMouseOver(event) {
+                resetStars();
+                const value = event.target.getAttribute('data-value');
+                highlightStars(value);
+            }
+
+            function handleMouseOut() {
+                resetStars();
+                if (selectedRating) {
+                    highlightStars(selectedRating);
+                }
+            }
+
+            function handleClick(event) {
+                resetStars();
+                selectedRating = event.target.getAttribute('data-value');
+                highlightStars(selectedRating);
+
+                let ratingText = '';
+                switch (selectedRating) {
+                    case '1':
+                        ratingText = 'Worse🥶';
+                        break;
+                    case '2':
+                        ratingText = 'Bad😫';
+                        break;
+                    case '3':
+                        ratingText = 'Neutral😎';
+                        break;
+                    case '4':
+                        ratingText = 'Good😄';
+                        break;
+                    case '5':
+                        ratingText = 'Excellent😍';
+                        break;
+                    default:
+                        ratingText = '';
+                        break;
+                }
+
+                ratingValue.textContent = `${ratingText}`;
+            }
+
+            function highlightStars(value) {
+                stars.forEach(star => {
+                    if (star.getAttribute('data-value') <= value) {
+                        star.classList.add('hover');
+                    }
+                });
+            }
+
+            function resetStars() {
+                stars.forEach(star => {
+                    star.classList.remove('hover');
+                    star.classList.remove('selected');
+                });
+            }
+
+            submitButton.addEventListener('click', function() {
+                const comment = commentField.value.trim();
+                if (selectedRating > 0) {
+                    fetch("{% url 'feedback' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: new URLSearchParams({
+                            'rating': selectedRating,
+                            'comment': comment
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        alert(`Thank you for your feedback! You rated us ${data.rating} stars and commented: "${data.comment}".`);
+                    });
+                } else {
+                    alert('Please select a rating before submitting.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 from django import forms
 from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, BookingForm
-from .models import Pet, Owner, Booking, Room
+from .models import Pet, Owner, Booking, Room, Feedback
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
 from .forms import BookingForm
@@ -451,3 +451,23 @@ def customer_booking(request):
     }
     
     return render(request, 'customer_booking.html', context)
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Feedback
+
+def feedback(request):
+    feedback = Feedback.objects.all()
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        if rating:
+            try:
+                rating = int(rating)
+                feedback_entry = Feedback(rating=rating, comment=comment)
+                feedback_entry.save()
+                return JsonResponse({'status': 'success', 'message': 'Feedback received', 'rating': rating, 'comment': comment})
+            except ValueError:
+                return JsonResponse({'status': 'error', 'message': 'Invalid rating value'})
+    feedback = Feedback.objects.all()
+    return render(request, 'feedback.html',{'feedback': feedback})

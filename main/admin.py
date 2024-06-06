@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Owner, Pet, Booking, Room
+from .models import Owner, Pet, Booking, Room, Feedback
 
 # Register your models here.
 
@@ -27,3 +27,8 @@ class BookingAdmin(admin.ModelAdmin):
     get_pets.short_description = 'Pets'
 
 admin.site.register(Room)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ('rating','comment')
