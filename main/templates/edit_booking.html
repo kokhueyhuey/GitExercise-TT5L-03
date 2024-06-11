@@ -72,6 +72,24 @@
         display: none;
     }
     .time-choice {
+<<<<<<< HEAD
+    margin-right: 10px;  /* Adjust spacing between buttons */
+    margin-bottom: 10px; /* Adjust vertical spacing between buttons */
+    padding: 8px 12px;   /* Padding inside the buttons */
+    font-size: 14px;     /* Font size of the button text */
+    border: 1px solid #ccc;  /* Border color */
+    border-radius: 4px;  /* Rounded corners */
+    cursor: pointer;     /* Cursor style */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    }
+
+    .time-choice:hover {
+        background-color: #f0f0f0; /* Background color on hover */
+    }
+    .time-choice.selected {
+        background-color: #63baf5; /* Change background color when selected */
+        color: #fff; /* Change text color when selected */
+=======
         margin-right: 10px;
         margin-bottom: 10px;
         padding: 8px 12px;
@@ -88,13 +106,28 @@
     .time-choice.selected {
         background-color: #63baf5;
         color: #fff;
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
     }
     .time-choice:focus,
     .time-choice:active {
         outline: none !important;
         box-shadow: none !important;
     }
+<<<<<<< HEAD
+    
 </style>
+<!-- <p>{{ booking.id }}</p>
+<p>{{ booking.owner.user }}</p>                
+<p>
+{% for pet in booking.pet.all %}
+    {{ pet.name }}{% if not forloop.last %}, {% endif %}
+{% endfor %}
+
+
+</p> -->
+=======
+</style>
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
 
 <div class="container">
     <h1>Edit Booking</h1>
@@ -108,6 +141,22 @@
         </div>
         <div class="form-group">
             <label for="id_service">Service:</label>
+<<<<<<< HEAD
+            <select id="id_service" name="service">
+                {% for choice in form.service.field.choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == booking.service %}selected{% endif %}>
+                        {{ choice.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" id="date-field">
+            <label for="id_date">Date: {{ booking.date|date:"Y-m-d" }}</label>
+            {{ form.date }}
+        </div>
+        <div class="form-group hidden" id="time-field">
+            <label for="id_time">Time: {{ booking.time|time:"HH-mm" }}</label>
+=======
             <p>{{ booking.service }}</p>
         </div>
         <div class="form-group" id="date-field">
@@ -116,12 +165,37 @@
         </div>
         <div class="form-group" id="time-field">
             <label for="id_time">Time:</label>
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
             <div id="time-buttons">
                 {% for choice in form.time.choices %}
                     <button type="button" class="time-choice btn btn-outline-primary" data-value="{{ choice.0 }}">{{ choice.1 }}</button>
                 {% endfor %}
             </div>
             <p id="fully-booked-message" style="color: red; font-weight: bold;"></p>
+<<<<<<< HEAD
+            {{ form.time }} <!-- Add a hidden input field to store the selected time -->
+            <input type="hidden" id="id_time" name="time" value="{{ booking.time }}">
+        </div>    
+        <div class="form-group hidden" id="checkin-field">
+            <label for="id_checkin">Check-in:</label>
+            {{ form.checkin }}
+        </div>
+        <div class="form-group hidden" id="checkout-field">
+            <label for="id_checkout">Check-out:</label>
+            {{ form.checkout }}
+        </div>
+
+        <div class="button-container">
+            <input type="submit" value="Save Booking">
+        </div>
+
+        {% for message in messages %}
+        <p id="messages">{{ message }}</p>
+        {% endfor %}
+    </form>
+</div>
+
+=======
             {{ form.time }}
         </div>     
 
@@ -135,13 +209,20 @@
     </form>
 </div>
 
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
+<<<<<<< HEAD
+    // Function to update time choices based on selected service and date
+    function updateTimes() {
+        var service = $('#id_service').val();
+=======
     // Function to update time choices based on selected date
     function updateTimes() {
         var service = '{{ booking.service }}';
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
         var date = $('#id_date').val();
 
         if (service && date) {
@@ -175,6 +256,50 @@ $(document).ready(function() {
         }
     }
 
+<<<<<<< HEAD
+    // Toggle visibility of check-in and check-out fields based on service selection
+    function toggleFields() {
+        var service = $('#id_service').val();
+
+        if (service === 'Pet Hotel') {
+            $('#date-field').addClass('hidden');
+            $('#time-field').addClass('hidden');
+            $('#checkin-field').removeClass('hidden');
+            $('#checkout-field').removeClass('hidden');
+        } else {
+            $('#date-field').removeClass('hidden');
+            $('#time-field').removeClass('hidden');
+            $('#checkin-field').addClass('hidden');
+            $('#checkout-field').addClass('hidden');
+            updateTimes(); // Update times when switching back to regular services
+        }
+    }
+
+    // Event listener for time slot selection
+    $(document).on('click', '.time-choice', function() {
+        // Remove 'selected' class from previously selected button (if any)
+        $('.time-choice').removeClass('selected');
+        
+        // Add 'selected' class to the clicked button
+        $(this).addClass('selected');
+        
+        var selectedTime = $(this).data('value');
+        $('#id_time').val(selectedTime);
+    });
+
+    // Event listeners for service and date changes
+    $('#id_service').change(toggleFields);
+    $('#id_date').change(updateTimes);
+
+    // Initial state setup
+    toggleFields();
+    updateTimes();
+});
+
+</script>
+
+{% endblock %}
+=======
     // Event listener for time slot selection
     $(document).on('click', '.time-choice', function() {
         // Remove 'selected' class from previously selected button (if any)
@@ -197,3 +322,4 @@ $(document).ready(function() {
 </script>
 
 {% endblock %}
+>>>>>>> 7e5f2e00772cd6ea87ca997d3744f58eb840aa9b
