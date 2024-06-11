@@ -72,40 +72,29 @@
         display: none;
     }
     .time-choice {
-    margin-right: 10px;  /* Adjust spacing between buttons */
-    margin-bottom: 10px; /* Adjust vertical spacing between buttons */
-    padding: 8px 12px;   /* Padding inside the buttons */
-    font-size: 14px;     /* Font size of the button text */
-    border: 1px solid #ccc;  /* Border color */
-    border-radius: 4px;  /* Rounded corners */
-    cursor: pointer;     /* Cursor style */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+        margin-right: 10px;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
     }
 
     .time-choice:hover {
-        background-color: #f0f0f0; /* Background color on hover */
+        background-color: #f0f0f0;
     }
     .time-choice.selected {
-        background-color: #63baf5; /* Change background color when selected */
-        color: #fff; /* Change text color when selected */
+        background-color: #63baf5;
+        color: #fff;
     }
     .time-choice:focus,
     .time-choice:active {
         outline: none !important;
         box-shadow: none !important;
     }
-    
 </style>
-<!-- <p>{{ booking.id }}</p>
-<p>{{ booking.owner.user }}</p>                
-<p>
-{% for pet in booking.pet.all %}
-    {{ pet.name }}{% if not forloop.last %}, {% endif %}
-{% endfor %}
-
-
-</p> -->
-
 
 <div class="container">
     <h1>Edit Booking</h1>
@@ -119,19 +108,13 @@
         </div>
         <div class="form-group">
             <label for="id_service">Service:</label>
-            <select id="id_service" name="service">
-                {% for choice in form.service.field.choices %}
-                    <option value="{{ choice.0 }}" {% if choice.0 == booking.service %}selected{% endif %}>
-                        {{ choice.1 }}
-                    </option>
-                {% endfor %}
-            </select>
+            <p>{{ booking.service }}</p>
         </div>
         <div class="form-group" id="date-field">
             <label for="id_date">Date:</label>
             {{ form.date }}
         </div>
-        <div class="form-group hidden" id="time-field">
+        <div class="form-group" id="time-field">
             <label for="id_time">Time:</label>
             <div id="time-buttons">
                 {% for choice in form.time.choices %}
@@ -141,14 +124,6 @@
             <p id="fully-booked-message" style="color: red; font-weight: bold;"></p>
             {{ form.time }}
         </div>     
-        <div class="form-group hidden" id="checkin-field">
-            <label for="id_checkin">Check-in:</label>
-            {{ form.checkin }}
-        </div>
-        <div class="form-group hidden" id="checkout-field">
-            <label for="id_checkout">Check-out:</label>
-            {{ form.checkout }}
-        </div>
 
         <div class="button-container">
             <input type="submit" value="Save Booking">
@@ -164,9 +139,9 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    // Function to update time choices based on selected service and date
+    // Function to update time choices based on selected date
     function updateTimes() {
-        var service = $('#id_service').val();
+        var service = '{{ booking.service }}';
         var date = $('#id_date').val();
 
         if (service && date) {
@@ -200,24 +175,6 @@ $(document).ready(function() {
         }
     }
 
-    // Toggle visibility of check-in and check-out fields based on service selection
-    function toggleFields() {
-        var service = $('#id_service').val();
-
-        if (service === 'Pet Hotel') {
-            $('#date-field').addClass('hidden');
-            $('#time-field').addClass('hidden');
-            $('#checkin-field').removeClass('hidden');
-            $('#checkout-field').removeClass('hidden');
-        } else {
-            $('#date-field').removeClass('hidden');
-            $('#time-field').removeClass('hidden');
-            $('#checkin-field').addClass('hidden');
-            $('#checkout-field').addClass('hidden');
-            updateTimes(); // Update times when switching back to regular services
-        }
-    }
-
     // Event listener for time slot selection
     $(document).on('click', '.time-choice', function() {
         // Remove 'selected' class from previously selected button (if any)
@@ -230,12 +187,10 @@ $(document).ready(function() {
         $('#id_time').val(selectedTime);
     });
 
-    // Event listeners for service and date changes
-    $('#id_service').change(toggleFields);
+    // Event listeners for date change
     $('#id_date').change(updateTimes);
 
     // Initial state setup
-    toggleFields();
     updateTimes();
 });
 

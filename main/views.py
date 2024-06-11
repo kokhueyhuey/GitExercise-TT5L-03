@@ -10,7 +10,7 @@ from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, Boo
 from .models import Pet, Owner, Booking, Room
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
-from .forms import BookingForm
+from .forms import BookingForm, EditBookingForm
 import datetime
 from datetime import timedelta
 
@@ -143,34 +143,10 @@ def edit_booking(request, booking_id):
     owner_pets = Pet.objects.filter(owner=owner)
     
     if request.method == 'POST':
-        form = BookingForm(owner, request.POST, instance=booking, pet_required=False, service_required=False)
+        form = EditBookingForm(owner, request.POST, instance=booking)
         if form.is_valid():
             booking_instance = form.save(commit=False)
             
-            if booking_instance.service == 'Pet Hotel':
-                # Handle Pet Hotel specific logic
-                booking_instance.date = None
-                booking_instance.time = None
-                
-                available_rooms = Room.objects.all()
-                for room in available_rooms:
-                    overlapping_bookings = Booking.objects.filter(
-                        room=room,
-                        checkin__lte=booking.checkout,
-                        checkout__gte=booking.checkin,
-                        service='Pet Hotel'  # Check only for Pet Hotel service
-                    ).exists()
-                    if not overlapping_bookings:
-                        booking.room = room
-                        break
-                else:
-                    messages.error(request, "No rooms are available for the selected dates.")
-                    context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
-                    return render(request, 'bookingpage.html', context)
-            else:
-                # Clear check-in and check-out for other services
-                booking_instance.checkin = None
-                booking_instance.checkout = None
 
             booking_instance.save()
             # messages.success(request, 'Booking has been updated successfully.')
@@ -179,7 +155,7 @@ def edit_booking(request, booking_id):
             # Form is not valid, print errors (optional)
             print(form.errors)
     else:
-        form = BookingForm(owner, instance=booking, pet_required=False, service_required=False)
+        form = BookingForm(owner, instance=booking)
     
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
 
