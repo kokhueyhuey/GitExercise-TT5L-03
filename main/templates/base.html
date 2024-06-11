@@ -109,8 +109,12 @@
     {% include 'navbar.html' %}
     {% block content %}
     {% endblock %}
-    <a href="{% url 'feedback' %}" class="floating-icon">
-        <img src="{% static 'image/catdog.png' %}" alt="PawBanner" style="width: 50px; height: 50px;">   </a>    
+    {% if request.user.is_authenticated %}
+    <div>
+        <a href="{% url 'feedback' %}" class="floating-icon">
+            <img src="{% static 'image/catdog.png' %}" alt="PawBanner" style="width: 50px; height: 50px;">   </a>    
+    </div>
+    {% endif %}
     <footer>
         <div class="footer-content">
             <h2 class="contact">Contact Us</h2>
