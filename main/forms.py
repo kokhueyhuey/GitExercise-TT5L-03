@@ -40,7 +40,6 @@ class BookingForm(forms.ModelForm):
     
     service = forms.ChoiceField(choices=SERVICE_CHOICES)
     time = forms.CharField(widget=forms.HiddenInput(), required=False)    
-    
 
     class Meta:
         model = Booking
