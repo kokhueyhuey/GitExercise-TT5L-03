@@ -1,17 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
 
-        body {
-            margin: 0;
-            padding: 0;
-        }
         .container {
             max-width: 1200px;
             margin: 20px auto;
@@ -47,16 +41,6 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-        }
         .sorting-form {
            display: flex;
            align-items: center;
@@ -64,6 +48,7 @@
 
         .sorting-form label {
             margin-right: 10px;
+            margin-left: 50px;
         }
 
         .sort-select {
@@ -89,8 +74,8 @@
             color: rgb(102, 58, 60);
         }
         .a {
-            margin: 10px;
-            width: 100%;
+            margin: 10px auto;
+            width: 96%;
             border-collapse: collapse;
         }
         .a th, td {
@@ -206,7 +191,8 @@
             margin-right: 30px;
         }
 
-        .room-list li {
+        .room-list li ,
+        .cr{
             display: inline-block;
             margin-right: 10px;
             background-color: #f0f0f0;
@@ -215,20 +201,24 @@
             border-radius: 5px;
         }
 
-        .room-list li a {
+        .room-list li a ,
+        .cr{
             text-decoration: none;
             color: #333;
             font-weight: bold;
         }
 
-        .room-list li a:hover {
+        .room-list li a:hover ,
+        .cr{
             color: #0066cc;
+        }
+        .cr{
+            width: 40px;
         }
 
 
     </style>
 </head>
-<body>
     <h1 class="dashb">Admin Dashboard</h1>
     <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Customer bookings</h2>
@@ -241,6 +231,10 @@
                 
             </li>
         {% endfor %}
+        <a href="{% url 'create_room' %}">
+            <button class="cr" type="button">+</button>
+        </a>
+    
     </ul>
     
 
@@ -285,10 +279,12 @@
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
             <td>
+                {% if booking.service != 'Pet Hotel' %}
                 <form method="post" action="{% url 'edit_booking' booking.id %}" style="display: inline;">
                     {% csrf_token %}
                     <button type="submit" class="button">Edit Booking</button>
                 </form>
+                {% endif %}
                 <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="booking_id" value="{{ booking.id }}">
@@ -322,7 +318,6 @@
             <th>Checkout</th>
             <th>Service</th>
             <th>Status</th>
-            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -341,23 +336,6 @@
             <td>{{ booking.checkout|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
-            <td>
-                <form action="{% url 'edit_booking' booking.id %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="button">Edit Booking</button>
-                </form>
-                <!-- <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <input type="hidden" name="status" value="Ongoing">
-                    <button type="submit" class="button-ongoing">Change to Ongoing</button>
-                </form> -->
-                <!-- <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <input type="hidden" name="status" value="Cancelled">
-                    <button type="submit"class="button-cancel" >Cancel booking</button>
-                </form>         -->
         </tr>
         {% endfor %}
     </tbody>
@@ -377,7 +355,6 @@
             <th>Checkout</th>
             <th>Service</th>
             <th>Status</th>
-            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -397,29 +374,11 @@
             <td>{{ booking.checkout|default:"-" }}</td>
             <td>{{ booking.service }}</td>
             <td>{{ booking.status }}</td>
-            <td>
-                <form action="{% url 'edit_booking' booking.id %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="button">Edit Booking</button>
-                </form>
-                <!-- <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <input type="hidden" name="status" value="Ongoing">
-                    <button type="submit" class="button-ongoing">Change to Ongoing</button>
-                </form>
-                <form method="post" >
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <input type="hidden" name="status" value="Completed">
-                    <button type="submit" class="button-complete">Complete booking</button>
-                </form>         -->
-    </tr>
+        </tr>
         {% endfor %}
         
     </tbody>
     </table>
 </div>
-</body>
 </html>
 {% endblock %}

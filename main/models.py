@@ -75,4 +75,10 @@ class Booking(models.Model):
     checkin = models.DateField(null=True, blank=True)
     checkout = models.DateField(null=True, blank=True)
 
+class Feedback(models.Model):
+    rating = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Rating: {self.rating}, Comment: {self.comment}'
 
