@@ -54,8 +54,29 @@
         height: 600px !important; /* Set a specific height */
         max-width: 100% !important; /* Ensure it doesn't exceed the container's width */
     }
-</style>
+    .link {
+        padding: 10px;
+        /* background-color: #D2B48C; Light brown color for data cells */
+        /* border: 1px solid #ccc; */
+        margin-bottom: 10px;
+    }
 
+    .link a {
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .link a:hover {
+        color: #666;
+        text-decoration: underline;
+    }
+</style>
+<div class="link">
+    <a href="{% url 'admin_dashboard'  %}">Admin dashboard</a> >
+    <a href="{% url 'room_detail' room.id %}">room {{ room.name }}</a>
+
+</div>
 <ul class="room-list">
     {% for room in rooms %}
         <li>
@@ -103,6 +124,8 @@
             initialView: 'dayGridMonth',
             events: '{% url "get_room_events" room.id %}',  // URL to fetch events from Django view
             eventDisplay: 'auto',
+            editable: true,
+            eventResizableFromStart: true,
             eventClick: function(info) {
                 // Open a modal or display the details when an event is clicked
                 const details = info.event.extendedProps.details;
@@ -119,6 +142,66 @@
     
                     alert(message.trim());  // Display details in an alert (replace with modal logic if needed)
                 }
+            },
+            eventDrop: function(info) {
+                const event = info.event;
+                const updatedEvent = {
+                    id: event.id,
+                    start: event.startStr,
+                    end: event.endStr || ''
+                };
+
+                fetch('{% url "update_booking_dates" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(updatedEvent)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Event updated successfully!');
+                    } else {
+                        alert(`Failed to update event: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            },
+            eventResize: function(info) {
+                const event = info.event;
+                const details = event.extendedProps.details;
+                const resizedEvent = {
+                    id: event.id,
+                    start: event.startStr,
+                    end: event.endStr || '',  // Ensure end is a string
+                    service: 'Pet Hotel'  // Assuming only Pet Hotel bookings are being resized
+                };
+
+                fetch('{% url "resize_booking" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(resizedEvent)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Event updated successfully!');
+                    } else {
+                        alert(`Failed to update event: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
             }
         });
 

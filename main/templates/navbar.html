@@ -85,12 +85,17 @@
     </header>
 
     <nav class="navigation">
-        <a href="{% url 'home' %}">Home</a>
 
-        <a href="#services">Services</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'bookingpage' %}" class="book">Book Now !</a>
         <a href="{% url 'calendar' %}">Calendar</a>
+        
+        {% else %}
+        <a href="{% url 'home' %}">Home</a>
+        <a href="#services">Services</a>
 
+        {% endif %}    
 
 
         {% if request.user.is_staff %}

@@ -16,10 +16,12 @@ urlpatterns = [
     path('calendar/', views.CalendarPage, name="calendar"),    
     path('all_bookings/', views.all_bookings, name="all_bookings"),    
     path('rooms/<int:room_id>/', views.room_detail, name='room_detail'),
+    path('create_room/', views.create_room, name='create_room'),
+    path('resize_booking/', views.resize_booking, name="resize_booking"),    
+    path('update_booking_dates/', views.update_booking_dates, name="update_booking_dates"),    
     path('get_room_events/<int:room_id>/', views.get_room_events, name='get_room_events'),    
     path('',views.home, name="home"),
     path('edit-booking/<int:booking_id>/', views.edit_booking, name='edit_booking'),
-    path('edit-booking/<int:pk>/', BookingUpdateView.as_view(), name='edit_booking'),
     path('ownerprofile/<int:booking_id>/', views.ownerpf, name='ownerpf'),
     path('customer_booking/', views.customer_booking, name='customer_booking'),
 ]

@@ -19,11 +19,15 @@ from django.views.generic.edit import UpdateView
 from .models import Booking, Owner
 from .forms import BookingForm, RoomForm
 
-# def room_list(request):
-#     rooms = Room.objects.all()
-#     room_id_1 = get_object_or_404(Room, pk=1)  # Fetch room with id=1
-#     return render(request, 'room_list.html', {'room_id_1': room_id_1, 'rooms': rooms})
-
+def create_room(request):
+    if request.method == 'POST':
+        form = RoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')  # Replace 'room_list' with the name of your list view or any other view
+    else:
+        form = RoomForm()
+    return render(request, 'create_room.html', {'form': form})
     
 def AdminPage(request):
     rooms = Room.objects.all()
@@ -78,7 +82,7 @@ def BookingPage(request):
     owner = request.user.owner
 
     if request.method == 'POST':
-        form = BookingForm(owner, request.POST)
+        form = BookingForm(owner, request.POST, pet_required=True, service_required=True)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.owner = owner
@@ -114,7 +118,7 @@ def BookingPage(request):
         else:
             print(form.errors)
     else:
-        form = BookingForm(owner)
+        form = BookingForm(owner, pet_required=True, service_required=True)
     
     bookings = Booking.objects.filter(owner=owner)
     context = {'form': form, 'bookings': bookings}
@@ -139,22 +143,45 @@ def edit_booking(request, booking_id):
     owner_pets = Pet.objects.filter(owner=owner)
     
     if request.method == 'POST':
-        form = BookingForm(owner, request.POST, instance=booking)
+        form = BookingForm(owner, request.POST, instance=booking, pet_required=False, service_required=False)
         if form.is_valid():
             booking_instance = form.save(commit=False)
-            if booking_instance.service in ['Pet Hotel', 'Pet Daycare']:
+            
+            if booking_instance.service == 'Pet Hotel':
+                # Handle Pet Hotel specific logic
                 booking_instance.date = None
                 booking_instance.time = None
+                
+                available_rooms = Room.objects.all()
+                for room in available_rooms:
+                    overlapping_bookings = Booking.objects.filter(
+                        room=room,
+                        checkin__lte=booking.checkout,
+                        checkout__gte=booking.checkin,
+                        service='Pet Hotel'  # Check only for Pet Hotel service
+                    ).exists()
+                    if not overlapping_bookings:
+                        booking.room = room
+                        break
+                else:
+                    messages.error(request, "No rooms are available for the selected dates.")
+                    context = {'form': form, 'bookings': Booking.objects.filter(owner=owner)}
+                    return render(request, 'bookingpage.html', context)
             else:
+                # Clear check-in and check-out for other services
                 booking_instance.checkin = None
                 booking_instance.checkout = None
+
             booking_instance.save()
-            return redirect('admin_dashboard')
+            # messages.success(request, 'Booking has been updated successfully.')
+            return redirect('admin_dashboard')  # Redirect to admin dashboard after successful update
+        else:
+            # Form is not valid, print errors (optional)
+            print(form.errors)
     else:
-        form = BookingForm(owner, instance=booking)
+        form = BookingForm(owner, instance=booking, pet_required=False, service_required=False)
     
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
-
 
 
 
@@ -319,7 +346,106 @@ def get_room_events(request, room_id):
         })
 
     return JsonResponse(events, safe=False)
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+import json
+from datetime import datetime
+from .models import Booking
+@csrf_exempt
+def resize_booking(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data.'})
+
+    booking_id = data.get('id')
+    new_start_str = data.get('start')
+    new_end_str = data.get('end')
+
+    if not booking_id or not new_start_str or not new_end_str:
+        return JsonResponse({'status': 'error', 'message': 'Missing required fields.'})
+
+    try:
+        booking = get_object_or_404(Booking, id=booking_id)
+        if booking.service != 'Pet Hotel':
+            return JsonResponse({'status': 'error', 'message': 'Only Pet Hotel bookings can be resized.'})
+
+        new_start = datetime.fromisoformat(new_start_str)
+        new_end = datetime.fromisoformat(new_end_str) if new_end_str else None
+
+        if not new_end:
+            return JsonResponse({'status': 'error', 'message': 'End date is required for Pet Hotel.'})
+
+        overlapping_bookings = Booking.objects.filter(
+            room_id=booking.room_id,
+            checkin__lt=new_end,
+            checkout__gte=new_start
+        ).exclude(id=booking_id)
+
+        if overlapping_bookings.exists():
+            return JsonResponse({'status': 'error', 'message': 'The new dates overlap with an existing booking.'})
+
+        booking.checkin = new_start
+        booking.checkout = new_end - timedelta(days=1)
+        booking.save()
+
+        return JsonResponse({'status': 'success'})
+    except ValueError as e:
+        return JsonResponse({'status': 'error', 'message': 'Invalid date format.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+@csrf_exempt
+def update_booking_dates(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON data.'})
+
+    booking_id = data.get('id')
+    new_start_str = data.get('start')
+    new_end_str = data.get('end')
+
+    if not booking_id or not new_start_str or not new_end_str:
+        return JsonResponse({'status': 'error', 'message': 'Missing required fields.'})
+
+    try:
+        booking = get_object_or_404(Booking, id=booking_id)
+        if booking.service != 'Pet Hotel':
+            return JsonResponse({'status': 'error', 'message': 'Only Pet Hotel bookings can be updated.'})
+
+        new_start = datetime.fromisoformat(new_start_str)
+        new_end = datetime.fromisoformat(new_end_str) if new_end_str else None
+
+        if not new_end:
+            return JsonResponse({'status': 'error', 'message': 'End date is required for Pet Hotel.'})
+
+        overlapping_bookings = Booking.objects.filter(
+            room_id=booking.room_id,
+            checkin__lt=new_end,
+            checkout__gte=new_start
+        ).exclude(id=booking_id)
+
+        if overlapping_bookings.exists():
+            return JsonResponse({'status': 'error', 'message': 'The new dates overlap with an existing booking.'})
+
+        booking.checkin = new_start
+        booking.checkout = new_end - timedelta(days=1)
+        booking.save()
+
+        return JsonResponse({'status': 'success'})
+    except ValueError as e:
+        return JsonResponse({'status': 'error', 'message': 'Invalid date format.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+    
 def PetprofilePage(request):
     try:
         owner_instance = Owner.objects.get(user=request.user)

@@ -51,8 +51,15 @@ class BookingForm(forms.ModelForm):
         }
 
     def __init__(self, owner, *args, **kwargs):
+        service_required = kwargs.pop('service_required', True)
+        pet_required = kwargs.pop('pet_required', True)
         super().__init__(*args, **kwargs)
         self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
+        self.fields['pet'].required = pet_required
+        self.fields['service'].required = service_required
+
+
+        
 
         # Get the service and date from the initial data or POST data
         service = self.initial.get('service', self.data.get('service'))
