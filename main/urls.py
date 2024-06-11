@@ -1,6 +1,6 @@
 from django.urls import path 
 from . import views
-from .views import AdminPage, BookingUpdateView
+from .views import AdminPage, BookingUpdateView, feedback
 urlpatterns = [
     path('admin_dashboard/', views.AdminPage, name="admin_dashboard"),
     path('timetable/', views.timetable, name="timetable"),
@@ -22,4 +22,5 @@ urlpatterns = [
     path('edit-booking/<int:pk>/', BookingUpdateView.as_view(), name='edit_booking'),
     path('ownerprofile/<int:booking_id>/', views.ownerpf, name='ownerpf'),
     path('customer_booking/', views.customer_booking, name='customer_booking'),
+    path('feedback/', views.feedback, name='feedback'),
 ]
