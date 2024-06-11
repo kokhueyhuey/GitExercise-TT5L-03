@@ -197,14 +197,16 @@ def get_booking(request):
     events = []
     for booking in hair_grooming_bookings:
         event = {
+            "id": booking.id,
             "title": booking.service,
             "start": f"{booking.date}T{booking.time}",
-            "color": "green"  # assign green color to Hair Grooming bookings
+            "color": "green"  ,# assign green color to Hair Grooming bookings
         }
         events.append(event)
 
     for booking in bath_and_dry_bookings:
         event = {
+            "id": booking.id,
             "title": booking.service,
             "start": f"{booking.date}T{booking.time}",
             "color": "light blue"  # assign blue color to Bath and Dry bookings
