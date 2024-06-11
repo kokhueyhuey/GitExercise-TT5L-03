@@ -141,7 +141,7 @@ def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     owner = booking.owner
     owner_pets = Pet.objects.filter(owner=owner)
-
+    
     if request.method == 'POST':
         form = EditBookingForm(owner, request.POST, instance=booking)
         if form.is_valid():
@@ -156,7 +156,7 @@ def edit_booking(request, booking_id):
             print(form.errors)
     else:
         form = BookingForm(owner, instance=booking)
-
+    
     return render(request, 'edit_booking.html', {'form': form, 'booking': booking, 'owner_pets': owner_pets})
 
 
@@ -168,6 +168,11 @@ from .forms import BookingForm
 from django.http import JsonResponse 
 
 
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Booking
+
 def ownerpf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     pets = booking.pet.all()
@@ -177,217 +182,36 @@ def ownerpf(request, booking_id):
 # def petpf(request, booking_id):
 #     booking = get_object_or_404(Booking, id=booking_id)
 #     return render(request, 'admin_petprofile.html', {'booking': booking})
-from django.shortcuts import render
-from.models import Booking
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Booking
-import json
-
-
 def timetable(request):
+    
     bookings = Booking.objects.all()
     context = {
         "bookings": bookings,
     }
     return render(request, 'timetable.html', context)
 
-
-def update_booking(request):
-    if request.method == 'POST':
-        event_id = request.POST.get('id')
-        start_str = request.POST.get('start')
-        end_str = request.POST.get('end')
-
-        try:
-            event = Booking.objects.get(id=event_id)
-            start_dt = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-            end_dt = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-            event.start = start_dt
-            event.end = end_dt
-            event.save()
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-from django.http import JsonResponse
-from.models import Booking
-from django.http import JsonResponse
-from .models import Booking
-
 def get_booking(request):
-    bookings = Booking.objects.all()  # Retrieve all bookings from the database
+    hair_grooming_bookings = Booking.objects.filter(service='Hair Grooming')
+    bath_and_dry_bookings = Booking.objects.filter(service='Bath and Dry')
+
     events = []
-    for booking in bookings:
-        if booking.service == 'Hair Grooming':
-            event = {
-                "title": booking.service,
-                "start": f"{booking.date}T{booking.time}",
-                "color": "green",
-                "id": booking.id,
-                'owner': booking.owner.user.username
-            }
-            events.append(event)
+    for booking in hair_grooming_bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+            "color": "green"  # assign green color to Hair Grooming bookings
+        }
+        events.append(event)
 
-        elif booking.service == 'Bath and Dry':
-            event = {
-                "title": booking.service,
-                "start": f"{booking.date}T{booking.time}",
-                "color": "light blue",
-                "id": booking.id,
-                'owner': booking.owner.user.username
-            }
-            events.append(event)
-
-        elif booking.service == 'Pet Daycare':
-            if booking.time == 'full_day':
-                events.append({
-                    'title': f'{booking.owner.user.username} - full ({booking.id})',
-                    'start': booking.date,
-                    'end': booking.date,
-                    'owner': booking.owner.user.username,
-                    'allDay': True,
-                    'color' : 'orange',
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
-                })
-
-            elif booking.time == 'morning':
-                events.append({
-                    'title': f'{booking.owner.user.username} - morning ({booking.id})',
-                    'start': booking.date,
-                    'end': booking.date,
-                    'owner': booking.owner.user.username,
-                    'allDay': True,
-                    'color' : 'green',
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
-                })
-
-            elif booking.time == 'noon':
-                events.append({
-                    'title': f'{booking.owner.user.username} - noon ({booking.id})',
-                    'start': booking.date,
-                    'end': booking.date,              
-                    'color' : 'blue',
-                    'owner': booking.owner.user.username,
-                    'allDay': True,
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
-                })
+    for booking in bath_and_dry_bookings:
+        event = {
+            "title": booking.service,
+            "start": f"{booking.date}T{booking.time}",
+            "color": "light blue"  # assign blue color to Bath and Dry bookings
+        }
+        events.append(event)
 
     return JsonResponse(events, safe=False)
-
-
-# def get_booking(request):
-#     bookings = Booking.objects.all()
-
-#     events = []
-#     for booking in bookings:
-#         if booking.service == 'Hair Grooming':
-#             color = 'green'
-#         elif booking.service == 'Bath and Dry':
-#             color = 'light blue'
-#         elif booking.service == 'Pet Daycare':
-#             if booking.time == 'full_day':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - full ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'orange',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             elif booking.time == 'morning':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - morning ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'green',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             elif booking.time == 'noon':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - noon ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'color': 'blue',
-#                     'allDay': True,
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             else:
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - {booking.time} ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'purple',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#         else:
-#             events.append({
-#                 'title': f'{booking.owner.user.username} - {booking.service} ({booking.id})',
-#                 'start': f"{booking.date}T{booking.time}",
-#                 'color': 'gray',
-#                 'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#             })
-
-#     return JsonResponse(events, safe=False)
-
-# @csrf_exempt
-# @require_POST
-# def update_booking(request):
-#     try:
-#         data = request.POST
-#         event_id = data.get('id')
-#         start = data.get('start')
-#         end = data.get('end')
-
-#         # Log incoming data
-#         print('Received data:', event_id, start, end)
-
-#         event = Booking.objects.get(id=event_id)
-#         event.start = start
-#         event.end = end
-#         event.save()
-
-#         return JsonResponse({'success': True})
-#     except Booking.DoesNotExist:
-#         return JsonResponse({'success': False, 'error': 'Event not found'})
-#     except Exception as e:
-#         print('Error updating event:', str(e))
-#         return JsonResponse({'success': False, 'error': str(e)})
-
-def save_changes(request):
-    if request.method!= 'POST':
-        return JsonResponse({'success': False, 'error': 'Invalid request method'})
-
-    events = {}
-    for key, value in request.POST.items():
-        if key.startswith('id_'):
-            event_id = int(key.split('_')[1])
-            events[event_id] = {}
-        elif key.startswith('start_'):
-            event_id = int(key.split('_')[1])
-            events[event_id]['start'] = value
-        elif key.startswith('end_'):
-            event_id = int(key.split('_')[1])
-            events[event_id]['end'] = value
-
-    for event_id, event_data in events.items():
-        try:
-            booking = Booking.objects.get(id=event_id)
-            booking.start = event_data['start']
-            if 'end' in event_data:
-                booking.end = event_data['end']
-            else:
-                booking.end = None
-            booking.save()
-        except Booking.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Booking not found'})
-
-    return JsonResponse({'success': True})
-
 
 def CalendarPage(request):
     owner = request.user.owner
