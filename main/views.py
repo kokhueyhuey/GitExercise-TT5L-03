@@ -245,7 +245,7 @@ def get_booking(request):
             if booking.time == 'full_day':
                 events.append({
                     'title': f'{booking.owner.user.username} - full ({booking.id})',
-                    'tart': booking.date,
+                    'start': booking.date,
                     'end': booking.date,
                     'owner': booking.owner.user.username,
                     'allDay': True,
@@ -256,7 +256,7 @@ def get_booking(request):
             elif booking.time == 'morning':
                 events.append({
                     'title': f'{booking.owner.user.username} - morning ({booking.id})',
-                    'tart': booking.date,
+                    'start': booking.date,
                     'end': booking.date,
                     'owner': booking.owner.user.username,
                     'allDay': True,
@@ -267,7 +267,7 @@ def get_booking(request):
             elif booking.time == 'noon':
                 events.append({
                     'title': f'{booking.owner.user.username} - noon ({booking.id})',
-                    'tart': booking.date,
+                    'start': booking.date,
                     'end': booking.date,              
                     'color' : 'blue',
                     'owner': booking.owner.user.username,

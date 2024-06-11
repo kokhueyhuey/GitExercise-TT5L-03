@@ -56,30 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
         height: 'auto',
         expandRows: true,
         contentHeight: 'auto',
-        editable: true,
         events: [],
         eventClick: function(info) {
-            var event = info.event;
-            var bookingId = event.id;
-            var ownerId = event.owner;
+            let message = 'Booking Details:\n';
+            message += `BOOKINGID: ${info.event.id}\n`;
+            message += `Service: ${info.event.title}\n`;
+            message += `Owner: ${info.event.extendedProps.owner}\n`;
+            message += `Date: ${info.event.start.toLocaleDateString()}\n`;
+            message += `Time: ${info.event.start.toLocaleTimeString()}\n`;
 
-            $.ajax({
-                type: 'GET',
-                url: '/get_booking/' + bookingId,
-                success: function(data) {
-                    var bookingDetails = data.booking;
-                    var html = `
-                        <p>Owner: ${ownerId}</p>
-                        <p>Service: ${bookingDetails.service}</p>
-                        <p>Date: ${bookingDetails.date}</p>
-                        <p>Time: ${bookingDetails.time}</p>
-                        <p>Status: ${bookingDetails.status}</p>
-                    `;
-                    info.jsEvent.preventDefault();
-                    $('#myModal').modal('show');
-                    $('#modal-body').html(html);
-                }
-            });
+            alert(message.trim());
         },
         eventDrop: function(info) {
             const event = info.event;
