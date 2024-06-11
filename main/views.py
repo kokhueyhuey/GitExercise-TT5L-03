@@ -222,57 +222,77 @@ def get_booking(request):
     events = []
     for booking in bookings:
         if booking.service == 'Hair Grooming':
+            pets = booking.pet.all()  # Fetch all pets associated with this booking
+            pet_names = ', '.join([pet.name for pet in pets])
+
             event = {
-                "title": booking.service,
+                "title": pet_names,
+                'service': booking.service,
                 "start": f"{booking.date}T{booking.time}",
-                "color": "green",
+                "color": "#AFEEEE",
                 "id": booking.id,
-                'owner': booking.owner.user.username
+                'owner': booking.owner.user.username,
+                "pet": pet_names
             }
             events.append(event)
 
         elif booking.service == 'Bath and Dry':
+            pets = booking.pet.all()  # Fetch all pets associated with this booking
+            pet_names = ', '.join([pet.name for pet in pets])
+
             event = {
-                "title": booking.service,
+                "title":pet_names,
+                'service': booking.service,
                 "start": f"{booking.date}T{booking.time}",
-                "color": "light blue",
+                "color": '#87CEFA',
                 "id": booking.id,
-                'owner': booking.owner.user.username
+                'owner': booking.owner.user.username,
+                "pet": pet_names
+
             }
             events.append(event)
 
         elif booking.service == 'Pet Daycare':
+            pets = booking.pet.all()  # Fetch all pets associated with this booking
+            pet_names = ', '.join([pet.name for pet in pets])
+
             if booking.time == 'full_day':
                 events.append({
-                    'title': f'{booking.owner.user.username} - full ({booking.id})',
+                    'title': f'{pet_names} - full ({booking.id})',
+                    'id' : booking.id,
+                    'service' : booking.service,
                     'start': booking.date,
                     'end': booking.date,
                     'owner': booking.owner.user.username,
+                    "pet": pet_names,
                     'allDay': True,
-                    'color' : 'orange',
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
+                    'color' : '#f0e130',
                 })
 
             elif booking.time == 'morning':
                 events.append({
-                    'title': f'{booking.owner.user.username} - morning ({booking.id})',
+                    'title': f'{pet_names} - morning ({booking.id})',
+                    'id' : booking.id,
+                    'service' : booking.service,
                     'start': booking.date,
                     'end': booking.date,
                     'owner': booking.owner.user.username,
+                    "pet": pet_names,
                     'allDay': True,
-                    'color' : 'green',
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
+                    'color' : '#4682B4',
                 })
 
             elif booking.time == 'noon':
                 events.append({
-                    'title': f'{booking.owner.user.username} - noon ({booking.id})',
+                    'title': f'{pet_names} - noon ({booking.id})',
+                    'id' : booking.id,
+                    'service' : booking.service,
                     'start': booking.date,
                     'end': booking.date,              
-                    'color' : 'blue',
+                    'color' : '#FF6347',
                     'owner': booking.owner.user.username,
+                    "pet": pet_names,
                     'allDay': True,
-                    'description': f'Service: {booking.service}\nStatus: {booking.status}',
                 })
 
     return JsonResponse(events, safe=False)
