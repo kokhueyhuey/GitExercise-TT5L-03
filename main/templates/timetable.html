@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
-{% load templatetags %}
+{% load static %}
 {% block content %}
-
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
 <div id="calendar-container">
     <div id="calendar"></div>
+    <!-- <div id="button-container">
+        <button id="save-button" class="btn btn-primary">Save Changes</button>
+    </div> -->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/dayjs"></script>
@@ -12,17 +17,17 @@
 
 <style>
     #calendar-container {
-        width: 70%; /* Adjust the width as needed */
-        margin: 40px auto; /* Center the calendar horizontally and add top margin */
-        padding: 20px; /* Optional padding */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for styling */
-        background-color: #ffffffc3; /* Background color for better contrast */
-        border-radius: 10px; /* Rounded corners */
+        width: 70%;
+        margin: 40px auto;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffffc3;
+        border-radius: 10px;
     }
 
     #calendar {
-        width: 100%; /* Ensure the calendar takes full width of the container */
-        max-width: 100%; /* Ensure it doesn't exceed the container's width */
+        width: 100%;
+        max-width: 100%;
     }
 
     .fc-event-title {
@@ -30,45 +35,342 @@
         font-size: larger;
     }
 
-    /* Increase row height */
     .fc-timegrid-slot {
-        height: 50px !important; /* Adjust the height value as needed */
+        height: 50px !important;
     }
 </style>
-
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        slotDuration: '01:00',
+        slotMinTime: '09:00',
+        slotMaxTime: '18:00',
+        slotLabelFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            meridian: 'short'
+        },
+        allDaySlot: false,
+        height: 'auto',
+        expandRows: true,
+        contentHeight: 'auto',
+        editable: true,
+        events: [],
+        eventClick: function(info) {
+            var event = info.event;
+            var bookingId = event.id;
+            var ownerId = event.owner;
+
+            $.ajax({
+                type: 'GET',
+                url: '/get_booking/' + bookingId,
+                success: function(data) {
+                    var bookingDetails = data.booking;
+                    var html = `
+                        <p>Owner: ${ownerId}</p>
+                        <p>Service: ${bookingDetails.service}</p>
+                        <p>Date: ${bookingDetails.date}</p>
+                        <p>Time: ${bookingDetails.time}</p>
+                        <p>Status: ${bookingDetails.status}</p>
+                    `;
+                    info.jsEvent.preventDefault();
+                    $('#myModal').modal('show');
+                    $('#modal-body').html(html);
+                }
+            });
+        },
+        eventDrop: function(info) {
+            const event = info.event;
+            const start = info.event.start.toISOString();
+            const end = info.event.end.toISOString();
+
+            // Send an AJAX request to update the event on the server-side
+            $.ajax({
+                type: 'POST',
+                url: '/update-event',
+                data: {
+                    id: event.id,
+                    start: start,
+                    end: end
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the event's start and end dates on the client-side
+                        event.start = start;
+                        event.end = end;
+                    } else {
+                        // If the update fails, revert the event to its original position
+                        info.revert();
+                    }
+                }
+            });
+        }
+    });
+
+    calendar.render();
+
+    fetchEventsAndPopulateCalendar();
+
+    function fetchEventsAndPopulateCalendar() {
+        fetch("{% url 'get_booking' %}")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch events');
+            }
+            return response.json();
+        })
+        .then(events => {
+            events.forEach(event => {
+                calendar.addEvent(event);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching events:', error);
+            alert('Failed to load events');
+        });
+    }
+
+    function updateEvent(info) {
+        const event = info.event;
+        const start = event.start.toISOString();
+        const end = event.end ? event.end.toISOString() : null;
+
+        const formData = new FormData();
+        formData.append('id', event.id);
+        formData.append('start', start);
+        formData.append('end', end);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'update_booking' %}", {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Event updated successfully');
+                // Refresh the calendar to update the event's position
+                calendar.refetchEvents();
+            } else {
+                console.error('Error updating event:', data.error);
+                info.revert();
+            }
+        })
+        .catch(error => {
+            console.error('Error updating event:', error);
+            info.revert();
+        });
+    }
+});
+
+</script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek',
-            slotDuration: '01:00:00',
-            slotMinTime: '09:00:00',
-            slotMaxTime: '18:00:00',
+            slotDuration: '01:00',
+            slotMinTime: '09:00',
+            slotMaxTime: '18:00',
             slotLabelFormat: {
                 hour: '2-digit',
                 minute: '2-digit',
                 meridian: 'short'
             },
             allDaySlot: false,
-            height: 'auto', /* Adjusts the height of the calendar to fit its container */
-            expandRows: true, /* Ensures all rows have the same height */
-            contentHeight: 'auto', /* Adjusts the height of the calendar content */
-            events: [],
-            eventClick: function(info) {
-                alert(info.event.extendedProps.description);
+            height: 'auto',
+            expandRows: true,
+            contentHeight: 'auto',
+            editable: true,
+            events: function(fetchInfo, successCallback, failureCallback) {
+                const csrfToken = getCookie('csrftoken');
+
+                fetch("{% url 'get_booking' %}", {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': csrfftoken
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const events = data.events;
+                    successCallback(events);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    failureCallback();
+                });
+            },
+            eventDrop: function(info) {
+                console.log('Event dropped:', info.event);
+                console.log('Event start:', info.event.start);
+                console.log('Event end:', info.event.end);
+                if (info.event.end === null || info.event.end === undefined) {
+                    console.error('Event end property is not set!');
+                }
+                info.event.start = info.newStart;
+                info.event.end = info.newEnd;
+                console.log('Updated event:', info.event);
+
+  // Return true to indicate that the event was successfully dropped
+                return true;
+
+                const event = info.event;
+
+
+                const start = event.start;
+                const duration = event.getDuration(); // Get the event duration
+                const end = start.clone().add(duration); // Calculate the end time
+
+                const formData = new FormData();
+                formData.append('id', info.event.id);
+                formData.append('start', start.toISOString());
+                formData.append('end', end.toISOString());
+                formData.append('date', start.format('YYYY-MM-DD'));
+
+                const csrfToken = getCookie('csrftoken');
+
+                fetch("{% url 'update_booking' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: formData,
+                })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+            .then(data => {
+                    if (data.success) {
+                        console.log('Event updated successfully');
+                    } else {
+                        console.log('Error updating event:', data.error);
+                    }
+                })
+            .catch(error => {
+                    console.error('Error:', error);
+                });
+            },            
+            eventResize: function(info) {
+                updateEvent(info.event);
             }
         });
 
         calendar.render();
 
-        fetch("{% url 'get_booking' %}")
-        .then(response => response.json())
-        .then(events => {
-            events.forEach(event => {
-                calendar.addEvent(event);
-            });
+        document.getElementById('save-button').addEventListener('click', function() {
+            saveChanges(calendar);
         });
+
+        function updateEvent(event) {
+            const start = event.start.toISOString();
+            let end = null;
+            if (event.end) {
+                end = event.end.toISOString();
+            }
+            const date = event.start.getDate();
+
+            const formData = new FormData();
+            formData.append('id', event.id);
+            formData.append('start', start);
+            formData.append('end', end);
+            formData.append('date', date);
+
+            const csrfToken = getCookie('csrftoken');
+
+            fetch("{% url 'update_booking' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Do nothing
+                } else {
+                    info.revert(); // Revert the event to its original position if the update fails
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                info.revert(); // Revert the event to its original position if there's an error
+            });
+        }
+
+        function saveChanges(calendar) {
+            const events = calendar.getEvents();
+            const formData = new FormData();
+
+            events.forEach(event => {
+                formData.append(`id_${event.id}`, event.id);
+                formData.append(`start_${event.id}`, event.start.toISOString());
+                let end = '';
+                if (event.end) {
+                    end = event.end.toISOString();
+                }
+                formData.append(`end_${event.id}`, end);
+            });
+
+            const csrfToken = getCookie('csrftoken');
+
+            fetch("{% url 'save_changes' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData,
+            })
+           .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+           .then(data => {
+                if (data.success) {
+                    calendar.refetchEvents(); // Refresh the calendar to reflect the saved changes
+                } else {
+                    console.log('Failed to save changes');
+                }
+            })
+           .catch(error => {
+                console.error('Error:', error);
+                console.log('Failed to save changes');
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie!== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     });
-</script>
+</script> -->
 
 {% endblock %}
