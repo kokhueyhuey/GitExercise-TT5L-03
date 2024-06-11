@@ -4,7 +4,9 @@ from .views import AdminPage, BookingUpdateView, feedback
 urlpatterns = [
     path('admin_dashboard/', views.AdminPage, name="admin_dashboard"),
     path('timetable/', views.timetable, name="timetable"),
+    path('update_booking/', views.update_booking, name="update_booking"),
     path('get_booking/', views.get_booking, name="get_booking"),
+    path('get_booking/<int:booking_id>/', views.get_booking, name="get_booking"),
     path('profile/', views.profilePage, name="profile"),
     path('petprofile/', views.PetprofilePage, name="petprofile"),
     path('edit_pet/<int:pet_id>', views.edit_pet, name="edit_pet"),
