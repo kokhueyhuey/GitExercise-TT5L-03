@@ -109,6 +109,11 @@
             right: 10px;
         }
 
+        .star-display {
+            font-size: 0.5em;
+            color: #ffcc00;
+        }
+
         @media (max-width: 768px) {
             .feedback-item {
                 width: calc(50% - 20px); /* Adjust the width for smaller screens */
@@ -147,13 +152,21 @@
     
             {% for feedback in feedback %}
             <div class="feedback-item">
-                <p><strong>Rating star:</strong> {{ feedback.rating }}</p>
-                <p> {{ feedback.comment }}</p>
+                <div class="star-display">
+                    {% for i in "12345" %}
+                        {% if i|add:"0" <= feedback.rating %}
+                            <span class="star">&#9733;</span>
+                        {% else %}
+                            <span class="star">&#9734;</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p>{{ feedback.comment }}</p>
             </div>
             {% empty %}
                 <p>No feedback yet.</p>
             {% endfor %}
-        
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
