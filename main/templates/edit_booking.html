@@ -1,194 +1,199 @@
-
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Booking</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        body {
-            font-family: "Quicksand", sans-serif;
-            background-color: #F9F2EB;
-            margin: 0;
-            padding: 0;
-         
-        }
-        .container-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .container {
-            width: 500px;
-            margin:auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+<style>
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
 
-        h1 {
-            margin-bottom: 30px;
-            text-align: center; 
-        }
-        .details {
-            margin-bottom: 20px;
-            text-align: center; 
-            color: black;
-            font-size: x-large;
-        }
-        form {
-            margin-top: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="date"],
-        .form-group input[type="time"],
-        #id_checkin,
-        #id_checkout,
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .button-container {
-            text-align: center;
-        }
-        .button-container button {
-            padding: 10px 20px;
-            margin: 0 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .button {
-            background-color: rgb(102, 58, 60);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px; 
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .button:hover {
-            background-color: rgb(255,223,203);
-            color: rgb(102, 58, 60);
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
-</head>
-<body>
+    h1 {
+        text-align: center;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    form .form-group {
+        margin-bottom: 15px;
+    }
+
+    form label {
+        display: block;
+        font-weight: bold;
+    }
+
+    form input[type="text"],
+    form input[type="email"],
+    form input[type="date"],
+    form input[type="time"],
+    #id_pet,
+    #id_service,
+    #id_checkin,
+    #id_checkout {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    form input[type="submit"] {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .button-container {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    #messages {
+        background-color: grey;
+        color: #fff;
+        padding: 10px;
+        margin-top: 10px;
+        text-align: center;
+        border-radius: 5px;
+    }
+
+    .hidden {
+        display: none;
+    }
+    .time-choice {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .time-choice:hover {
+        background-color: #f0f0f0;
+    }
+    .time-choice.selected {
+        background-color: #63baf5;
+        color: #fff;
+    }
+    .time-choice:focus,
+    .time-choice:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+</style>
+
+<div class="container">
     <h1>Edit Booking</h1>
-
-        <!-- <div class="container1">
-            <h2 class="details">Booking details</h2>
-            <p>Booking ID: {{ booking.id }}</p>
-            <p>Customer name: {{ booking.owner }}</p>
-            {% if booking.service == 'Pet Hotel' or booking.service == 'Pet Daycare' %}
-                <p>Check-in: {{ booking.checkin }}</p>
-                <p>Check-out: {{ booking.checkout }}</p>
-            {% else %}
-                <p>Date: {{ booking.date }}</p>
-                <p>Time: {{ booking.time }}</p>
-            {% endif %}
-            <p>Service: {{ booking.service }}</p>
-            <p>Pet:                 
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_pet">Pet:</label>
             {% for pet in booking.pet.all %}
                 {{ pet.name }}{% if not forloop.last %}, {% endif %}
-            {% endfor %}</p>
-            {% csrf_token %}
+            {% endfor %}
         </div>
-        
-        <div class="arrow">
-        <i class="fas fa-arrow-right"></i>
-        </div> -->
+        <div class="form-group">
+            <label for="id_service">Service:</label>
+            <p>{{ booking.service }}</p>
+        </div>
+        <div class="form-group" id="date-field">
+            <label for="id_date">Date:</label>
+            {{ form.date }}
+        </div>
+        <div class="form-group" id="time-field">
+            <label for="id_time">Time:</label>
+            <div id="time-buttons">
+                {% for choice in form.time.choices %}
+                    <button type="button" class="time-choice btn btn-outline-primary" data-value="{{ choice.0 }}">{{ choice.1 }}</button>
+                {% endfor %}
+            </div>
+            <p id="fully-booked-message" style="color: red; font-weight: bold;"></p>
+            {{ form.time }}
+        </div>     
 
-        <div class="container">
-            <h2 class="details">New Booking details</h2>
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_pet">Pet:</label>
-                    {{ form.pet }}
-                </div>
-                <div class="form-group">
-                    <label for="id_service">Service:</label>
-                    {{ form.service }}
-                </div>
-                <div class="form-group" id ="date-field">
-                    <label for="id_date">Date:
-                    {{ form.date }}
-                    </label>
-                </div>
-                <div class="form-group" id="time-field">
-                    <label for="id_time">Time:
-                    {{ form.time }}
-                    </label>
-                </div>
-                <div class="form-group hidden" id="checkin-field">
-                    <label for="id_checkin">checkin:
-                    {{ form.checkin }}
-                    </label>
-                </div>
-                <div class="form-group hidden" id="checkout-field">
-                    <label for="id_checkout">checkout:
-                    {{ form.checkout }}
-                    </label>
-                </div>
-                <div class="button-container">
-                    <input type="submit" value="Save Booking Details" class="button">
-                </div>
-            </form>
+        <div class="button-container">
+            <input type="submit" value="Save Booking">
         </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const serviceField = document.querySelector('select[name="service"]');
-            const dateField = document.getElementById('date-field');
-            const timeField = document.getElementById('time-field');
-            const checkinField = document.getElementById('checkin-field');
-            const checkoutField = document.getElementById('checkout-field');
+        {% for message in messages %}
+        <p id="messages">{{ message }}</p>
+        {% endfor %}
+    </form>
+</div>
 
-            function toggleFields() {
-                if (serviceField.value === 'Pet Hotel' || serviceField.value === 'Pet Daycare') {
-                    dateField.classList.add('hidden');
-                    timeField.classList.add('hidden');
-                    checkinField.classList.remove('hidden');
-                    checkoutField.classList.remove('hidden');
-                } else {
-                    dateField.classList.remove('hidden');
-                    timeField.classList.remove('hidden');
-                    checkinField.classList.add('hidden');
-                    checkoutField.classList.add('hidden');
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Function to update time choices based on selected date
+    function updateTimes() {
+        var service = '{{ booking.service }}';
+        var date = $('#id_date').val();
+
+        if (service && date) {
+            $.ajax({
+                url: '{% url "update_times" %}',
+                data: {
+                    'service': service,
+                    'date': date
+                },
+                success: function(data) {
+                    var timeButtons = $('#time-buttons');
+                    timeButtons.empty();
+                    
+                    if ($.isEmptyObject(data.available_times)) {
+                        // Display message when no time slots are available
+                        $('#fully-booked-message').text('All time slots are fully booked at this time.');
+                    } else {
+                        // Append available time slots as buttons
+                        $.each(data.available_times, function(key, value) {
+                            var button = $('<button></button>')
+                                .attr('type', 'button')
+                                .addClass('time-choice btn btn-outline-primary')
+                                .attr('data-value', key)
+                                .text(value);
+                            timeButtons.append(button);
+                        });
+                        $('#fully-booked-message').empty(); // Clear the message if slots are available
+                    }
                 }
-            }
+            });
+        }
+    }
 
-            serviceField.addEventListener('change', toggleFields);
-            toggleFields();  
-        });
-    </script>
+    // Event listener for time slot selection
+    $(document).on('click', '.time-choice', function() {
+        // Remove 'selected' class from previously selected button (if any)
+        $('.time-choice').removeClass('selected');
+        
+        // Add 'selected' class to the clicked button
+        $(this).addClass('selected');
+        
+        var selectedTime = $(this).data('value');
+        $('#id_time').val(selectedTime);
+    });
 
-</body>
-</html>
+    // Event listeners for date change
+    $('#id_date').change(updateTimes);
+
+    // Initial state setup
+    updateTimes();
+});
+
+</script>
+
 {% endblock %}

@@ -51,8 +51,15 @@ class BookingForm(forms.ModelForm):
         }
 
     def __init__(self, owner, *args, **kwargs):
+        service_required = kwargs.pop('service_required', True)
+        pet_required = kwargs.pop('pet_required', True)
         super().__init__(*args, **kwargs)
         self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
+        self.fields['pet'].required = pet_required
+        self.fields['service'].required = service_required
+
+
+        
 
         # Get the service and date from the initial data or POST data
         service = self.initial.get('service', self.data.get('service'))
@@ -141,5 +148,94 @@ class BookingForm(forms.ModelForm):
                 if not overlapping_bookings:
                     self.cleaned_data['room'] = room
                     return cleaned_data
+        
+        return cleaned_data
+    
+class EditBookingForm(forms.ModelForm):
+    SERVICE_CHOICES = [
+        ('Hair Grooming', 'Hair Grooming'),
+        ('Bath and Dry', 'Bath and Dry'),
+        ('Pet Daycare', 'Pet Daycare'),
+    ]
+    
+    service = forms.ChoiceField(choices=SERVICE_CHOICES, disabled=True)
+    time = forms.CharField(widget=forms.HiddenInput(), required=False)    
+
+    class Meta:
+        model = Booking
+        fields = ['pet', 'date', 'time','service']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date', 'min': timezone.now().date().strftime('%Y-%m-%d'), 'id': 'id_date'}),
+        }
+
+    def __init__(self, owner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
+        self.fields['pet'].disabled = True  # Make pet field disabled for editing
+        
+
+        # Get the service and date from the initial data or POST data
+        service = self.initial.get('service', self.data.get('service'))
+        date = self.initial.get('date', self.data.get('date'))
+
+        if service in ['Hair Grooming', 'Bath and Dry', 'Pet Daycare']:
+            self.fields['time'].required = True
+            self.fields['time'].choices = self.get_available_time_choices(date, service)
+        else:
+            self.fields['time'].required = False
+            self.fields['time'].choices = [('', 'Select a time')]        
+    def get_available_time_choices(self, date, service):
+        if not date:
+            # Return a default choice for the 'time' field when the 'date' is not provided
+            return [('', 'Select a time')]
+
+        if service == 'Hair Grooming' or service == 'Bath and Dry':
+            TIME_CHOICES = [
+                ('09:00', '9:00'),
+                ('10:00', '10:00'),
+                ('11:00', '11:00'),
+                ('12:00', '12:00'),
+                ('14:00', '2:00'),
+                ('15:00', '3:00'),
+                ('16:00', '4:00'),
+                ('17:00', '5:00'),
+            ]
+        elif service == 'Pet Daycare':
+            TIME_CHOICES = [
+                ('full_day', 'Full Day (7:00-19:00)'),
+                ('morning', 'Morning (7:00-12:00)'),
+                ('noon', 'Noon (13:00-19:00)'),
+            ]
+        else:
+            TIME_CHOICES = []
+
+        if not date:
+            return TIME_CHOICES
+
+        # Filter out fully booked times
+        available_times = []
+        for time in TIME_CHOICES:
+            if service == 'Hair Grooming':
+                limit = 2
+            elif service == 'Bath and Dry':
+                limit = 3
+            elif service == 'Pet Daycare':
+                if time[0] == 'full_day':
+                    limit = 2
+                elif time[0] == 'morning':
+                    limit = 3
+                elif time[0] == 'noon':
+                    limit = 2
+                else:
+                    limit = float('inf')  # No limit for other services
+
+            bookings = Booking.objects.filter(date=date, time=time[0], service=service)
+            if bookings.count() < limit:
+                available_times.append(time)
+
+        return available_times
+    
+    def clean(self):
+        cleaned_data = super().clean()
         
         return cleaned_data
