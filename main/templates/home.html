@@ -2,6 +2,9 @@
 
 {% block content %}
 {% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Note</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand+SC&display=swap" rel="stylesheet">
     <style>
         section {
             padding: 20px;
@@ -68,7 +71,7 @@
 
         /* Sticky Note Styles */
         .sticky-note {
-            background-color: #ffeb3b;
+            background-color:  #ffe5b4;
             width: 400px; /* Fixed width to avoid being narrow */
             padding: 20px;
             margin: 60px 0 20px 0; /* Increased top margin to move it downward */
@@ -76,6 +79,8 @@
             transform: rotate(-2deg); /* Reduced rotation */
             position: relative;
             flex-shrink: 0; /* Prevent the sticky note from shrinking */
+            border-radius: 12px;
+            font-family: 'Patrick Hand SC', cursive;
         }
 
         .sticky-note:before {
@@ -85,15 +90,17 @@
             left: 50%;
             width: 20px;
             height: 20px;
-            background-color: #ffeb3b;
+            background-color: #ffe5b4;
             transform: rotate(45deg) translateX(-50%);
             box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
         }
 
         .sticky-note h2 {
             margin-top: 0;
-            font-size: 1.5em;
+            font-size: 3em;
             text-align: center;
+            color: #d32f2f; /* Dark red color */
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
         }
 
         .sticky-note ul {
@@ -103,8 +110,44 @@
 
         .sticky-note li {
             margin: 10px 0;
-            font-size: 1.1em;
+            font-size: 1.5em;
+            color: #333;
         }
+
+        .sticky-note .pin {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #d32f2f; /* Dark red pin color */
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sticky-note .pin:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .sticky-note .paw {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 50px;
+            height: 50px;
+            background-image: url('https://img.icons8.com/emoji/48/000000/paw-prints.png');
+            background-size: cover;
+        }
+
     </style>
 </head>
 <body>
@@ -125,6 +168,7 @@
         </div>
         <!-- Sticky Note placed beside the specific text -->
         <div class="sticky-note">
+            <div class="pin"></div>
             <h2>Opening Hours</h2>
             <ul>
                 <li>Monday: 9:00 AM - 5:00 PM</li>
@@ -135,6 +179,7 @@
                 <li>Saturday: 10:00 AM - 4:00 PM</li>
                 <li>Sunday: Closed</li>
             </ul>
+            <div class="paw"></div>
         </div>
     </div>
 </section>

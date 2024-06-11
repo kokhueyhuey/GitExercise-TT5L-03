@@ -2,17 +2,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset ="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetPals</title>
-</head>
-<body>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
         
         body {
@@ -28,13 +25,13 @@
             min-height: 100vh;
         }
 
-
         h2 {
-            color: white;
+            text-align: center;
+            color: #8B4513; /* Brown color for the heading */
+            margin-bottom: 20px;
             font-size: xx-large;
         }
 
-        
         footer {
             background-color: rgb(102, 58, 60);
             color: white;
@@ -48,24 +45,16 @@
             max-width: 960px;
             margin: 0 auto;
         }
+
         .footer-content p {
             margin: 5px 0;
         }
+
         .contact {
             color: #fff;
         }
-        
-        /* .container{
-            background-color: black !important;
-        } */
 
-        h2 {
-            text-align: center;
-            color: #8B4513; /* Brown color for the heading */
-            margin-bottom: 20px;
-        }
-
-        .ope{
+        .ope {
             width: 80%;
             border-collapse: collapse;
             margin: 0 auto;
@@ -73,7 +62,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .ope th, td {
+        .ope th, .ope td {
             padding: 12px;
             text-align: left;
             border: none;
@@ -93,29 +82,48 @@
 
         .ope r:last-child td {
             border-bottom: none;
-
-        }
-        .contact{
-            color:#FFF
         }
 
-        .ti{
+        .ti {
             margin-top: 20px;
         }
 
+        .floating-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            /* background-color: #007bff; */
+            color: #fff;
+            padding: 15px;
+            border-radius: 50%;
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+            cursor: pointer;
+            /* transition: background-color 0.3s; */
+        }
+
+        /* .floating-icon:hover {
+            background-color: #0056b3;
+        } */
+
+        .fas {
+            font-size: 24px;
+        }
     </style>
 </head>
-
 <body>
     {% include 'navbar.html' %}
-<!-- <div class = "container"> -->
     {% block content %}
     {% endblock %}
+    {% if request.user.is_authenticated %}
+    <div>
+        <a href="{% url 'feedback' %}" class="floating-icon">
+            <img src="{% static 'image/catdog.png' %}" alt="PawBanner" style="width: 50px; height: 50px;">   </a>    
+    </div>
+    {% endif %}
     <footer>
         <div class="footer-content">
             <h2 class="contact">Contact Us</h2>
-            <p>	31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, 
-                Petaling Jaya, Selangor</p>
+            <p>31, Jalan SS20/11, Damansara Utama, Petaling Jaya, 47400, Petaling Jaya, Selangor</p>
             <p>Phone/WhatsApp: 03-7722 4584</p>
             <p>Email: petpalsofficial@gmail.com</p>
         </div>
