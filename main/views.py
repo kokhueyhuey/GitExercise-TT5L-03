@@ -762,9 +762,9 @@ def feedback(request):
         if rating:
             try:
                 rating = int(rating)
-                feedback_entry = Feedback(rating=rating, comment=comment)
+                feedback_entry = Feedback(owner=request.user.owner,rating=rating, comment=comment)
                 feedback_entry.save()
-                return JsonResponse({'status': 'success', 'message': 'Feedback received', 'rating': rating, 'comment': comment})
+                return JsonResponse({'status': 'success', 'message': 'Feedback received', 'rating': rating, 'comment': comment, 'owner': request.user.owner.user.username})
             except ValueError:
                 return JsonResponse({'status': 'error', 'message': 'Invalid rating value'})
     feedback = Feedback.objects.all()

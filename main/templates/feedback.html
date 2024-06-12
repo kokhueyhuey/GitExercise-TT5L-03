@@ -152,7 +152,8 @@
                         {% endfor %}
                     </div>
                     <p>{{ feedback.comment }}</p>
-                    <p>{{ request.user.owner }}</p>
+                    <p style="text-align: left;">{{ feedback.owner.user.username }}</p>
+
 
                 </div>
             {% empty %}
