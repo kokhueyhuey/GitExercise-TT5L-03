@@ -61,7 +61,6 @@ class BookingForm(forms.ModelForm):
 
         
 
-        # Get the service and date from the initial data or POST data
         service = self.initial.get('service', self.data.get('service'))
         date = self.initial.get('date', self.data.get('date'))
 
@@ -73,7 +72,6 @@ class BookingForm(forms.ModelForm):
             self.fields['time'].choices = [('', 'Select a time')]        
     def get_available_time_choices(self, date, service):
         if not date:
-            # Return a default choice for the 'time' field when the 'date' is not provided
             return [('', 'Select a time')]
 
         if service == 'Hair Grooming' or service == 'Bath and Dry':
@@ -99,7 +97,7 @@ class BookingForm(forms.ModelForm):
         if not date:
             return TIME_CHOICES
 
-        # Filter out fully booked times
+
         available_times = []
         for time in TIME_CHOICES:
             if service == 'Hair Grooming':
@@ -114,7 +112,7 @@ class BookingForm(forms.ModelForm):
                 elif time[0] == 'noon':
                     limit = 2
                 else:
-                    limit = float('inf')  # No limit for other services
+                    limit = float('inf')  
 
             bookings = Booking.objects.filter(date=date, time=time[0], service=service)
             if bookings.count() < limit:
@@ -171,10 +169,9 @@ class EditBookingForm(forms.ModelForm):
     def __init__(self, owner, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['pet'].queryset = Pet.objects.filter(owner=owner)
-        self.fields['pet'].disabled = True  # Make pet field disabled for editing
+        self.fields['pet'].disabled = True  
         
 
-        # Get the service and date from the initial data or POST data
         service = self.initial.get('service', self.data.get('service'))
         date = self.initial.get('date', self.data.get('date'))
 
@@ -186,7 +183,6 @@ class EditBookingForm(forms.ModelForm):
             self.fields['time'].choices = [('', 'Select a time')]        
     def get_available_time_choices(self, date, service):
         if not date:
-            # Return a default choice for the 'time' field when the 'date' is not provided
             return [('', 'Select a time')]
 
         if service == 'Hair Grooming' or service == 'Bath and Dry':
@@ -212,7 +208,7 @@ class EditBookingForm(forms.ModelForm):
         if not date:
             return TIME_CHOICES
 
-        # Filter out fully booked times
+        # Set the limit slot for specific services
         available_times = []
         for time in TIME_CHOICES:
             if service == 'Hair Grooming':

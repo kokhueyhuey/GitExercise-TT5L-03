@@ -62,23 +62,21 @@
             position: sticky;
         }
 
-        /* Flex container for text and sticky note */
         .flex-container {
             display: flex;
             align-items: flex-start;
             gap: 20px;
         }
 
-        /* Sticky Note Styles */
         .sticky-note {
             background-color:  #ffe5b4;
-            width: 400px; /* Fixed width to avoid being narrow */
+            width: 400px;
             padding: 20px;
-            margin: 60px 0 20px 0; /* Increased top margin to move it downward */
+            margin: 60px 0 20px 0; 
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-            transform: rotate(-2deg); /* Reduced rotation */
+            transform: rotate(-2deg); 
             position: relative;
-            flex-shrink: 0; /* Prevent the sticky note from shrinking */
+            flex-shrink: 0; 
             border-radius: 12px;
             font-family: 'Patrick Hand SC', cursive;
         }
@@ -99,7 +97,7 @@
             margin-top: 0;
             font-size: 3em;
             text-align: center;
-            color: #d32f2f; /* Dark red color */
+            color: #d32f2f; 
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
         }
 
@@ -120,7 +118,7 @@
             left: 50%;
             width: 20px;
             height: 20px;
-            background-color: #d32f2f; /* Dark red pin color */
+            background-color: #d32f2f; 
             border-radius: 50%;
             transform: translateX(-50%);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);

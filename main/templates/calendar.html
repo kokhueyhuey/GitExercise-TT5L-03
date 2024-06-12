@@ -11,20 +11,18 @@
 
 <style>
     #calendar-container {
-        width: 70%; /* Adjust the width as needed */
-        margin: 40px auto; /* Center the calendar horizontally and add top margin */
-        padding: 20px; /* Optional padding */
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for styling */
-        background-color: #ffffffc3; /* Background color for better contrast */
-        border-radius: 10px; /* Rounded corners */
+        width: 70%; 
+        margin: 40px auto; 
+        padding: 20px; 
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffffc3; 
+        border-radius: 10px;
     }
 
     #calendar {
-        width: 100%; /* Ensure the calendar takes full width of the container */
-        max-width: 100%; /* Ensure it doesn't exceed the container's width */
+        width: 100%; 
+        max-width: 100%; 
     }
-    /* .fc-event-title {
-        color: black; /* Change to the color you prefer */
     
     
 </style>
@@ -35,12 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
-      events: '{% url "all_bookings" %}',  // URL to fetch events from Django view
+      events: '{% url "all_bookings" %}', 
       eventDisplay: 'auto',
-      height: 'auto',  // Adjusts the height of the calendar to fit its container
+      height: 'auto',  
       contentHeight: 'auto',
       eventClick: function(info) {
-        // Open a modal or display the details when an event is clicked
         const details = info.event.extendedProps.details;
         if (details) {
           let message = 'Booking Details:\n';

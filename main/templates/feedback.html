@@ -23,6 +23,14 @@
             color: #ccc;
             transition: color 0.2s;
         }
+        .starc {
+            font-size: 4em;
+            cursor: pointer;
+            color: #ffcc00;
+            transition: color 0.2s;
+        }
+
+
         .star:hover,
         .star.hover,
         .star.selected {
@@ -145,9 +153,9 @@
                     <div class="star-display">
                         {% for i in "12345" %}
                             {% if i <= feedback.rating|stringformat:"s" %}
-                                <span class="star">&#9733;</span>
+                                <span class="starc">&#9733;</span>
                             {% else %}
-                                <span class="star">&#9734;</span>
+                                <span class="starc">&#9734;</span>
                             {% endif %}
                         {% endfor %}
                     </div>
