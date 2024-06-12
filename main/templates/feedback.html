@@ -112,10 +112,31 @@
                 width: 100%;
             }
         }
+        .star-rating h1 {
+            text-align: center; 
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
 {% if request.user.is_staff %}
+    <div class="star-rating">
+        <h1>Rate Us</h1>
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <p id="rating-value"></p>
+        <textarea id="comment" placeholder="Leave a comment..."></textarea>
+        <div>
+            <button id="submit-rating">Submit Feedback</button>
+        </div>
+    </div>
+
     <div class="feedback-list">
         <h2>All Feedback</h2>
         <div class="feedback-items">
@@ -131,9 +152,11 @@
                         {% endfor %}
                     </div>
                     <p>{{ feedback.comment }}</p>
+                    <p>{{ request.user.owner }}</p>
+
                 </div>
             {% empty %}
-                <p>No feedback yet.</p>
+                <p style="margin-left: 50px;">No feedback yet.</p>
             {% endfor %}
         </div>
     </div>

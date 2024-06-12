@@ -27,7 +27,7 @@
 
         h2 {
             text-align: center;
-            color: #8B4513; /* Brown color for the heading */
+            color: #8B4513; 
             margin-bottom: 20px;
             font-size: xx-large;
         }
@@ -58,7 +58,7 @@
             width: 80%;
             border-collapse: collapse;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.7); /* Light brown color for the table background */
+            background-color: rgba(255, 255, 255, 0.7); 
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -67,17 +67,17 @@
             text-align: left;
             border: none;
             font-size: 16px;
-            color: #000; /* Black color for the text */
+            color: #000; 
         }
 
         .ope th {
-            background-color: #8B4513; /* Dark brown color for header cells */
+            background-color: #8B4513; 
             text-transform: uppercase;
-            color: #FFF; /* White color for the text */
+            color: #FFF; 
         }
 
         .ope td {
-            background-color: #D2B48C; /* Light brown color for data cells */
+            background-color: #D2B48C; 
         }
 
         .ope r:last-child td {
@@ -92,18 +92,12 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            /* background-color: #007bff; */
             color: #fff;
             padding: 15px;
             border-radius: 50%;
-            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
             cursor: pointer;
-            /* transition: background-color 0.3s; */
         }
 
-        /* .floating-icon:hover {
-            background-color: #0056b3;
-        } */
 
         .fas {
             font-size: 24px;
@@ -112,7 +106,10 @@
 </head>
 <body>
     {% include 'navbar.html' %}
+    <p style="color: white; background-color: red; font-size: larger; text-align: center;">This is a sample website for a project only, and not to be used professionally.</p>
+
     {% block content %}
+
     {% endblock %}
     {% if request.user.is_authenticated %}
     <div>

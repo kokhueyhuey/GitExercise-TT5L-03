@@ -258,7 +258,7 @@ def get_booking(request):
 
             if booking.time == 'full_day':
                 events.append({
-                    'title': f'{pet_names} - full ({booking.id})',
+                    'title': f'{pet_names} - fullday',
                     'id' : booking.id,
                     'service' : booking.service,
                     'start': booking.date,
@@ -271,7 +271,7 @@ def get_booking(request):
 
             elif booking.time == 'morning':
                 events.append({
-                    'title': f'{pet_names} - morning ({booking.id})',
+                    'title': f'{pet_names} - morning',
                     'id' : booking.id,
                     'service' : booking.service,
                     'start': booking.date,
@@ -284,7 +284,7 @@ def get_booking(request):
 
             elif booking.time == 'noon':
                 events.append({
-                    'title': f'{pet_names} - noon ({booking.id})',
+                    'title': f'{pet_names} - noon',
                     'id' : booking.id,
                     'service' : booking.service,
                     'start': booking.date,

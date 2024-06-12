@@ -77,26 +77,11 @@
         height: 100%;
         object-fit: cover;
     }
-
-
-
-    /* #profile-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Ensures the image covers the entire container */
     
 
 </style>
 <body>
     <h1 class="ti">Edit Pet Profile</h1>
-    <!-- Example for displaying pet's profile picture -->
-        <!-- <div class="profile_pic">
-            {% if pet_instance.profile_pic %}
-                <img src="{{ pet_instance.profile_pic.url }}" alt="{{ pet_instance.name }}'s Profile Picture" id="profile-img">
-            {% else %}
-                <img src="{% static 'image/profile.jpg' %}" id="profile-img">
-            {% endif %}
-        </div> -->
     <div class="row">    
         <div class="col-md-5">
             <div class="card card-body">
@@ -114,8 +99,9 @@
             </div>
         </div>
         <div class="col-md-5">
-            <form method="post" enctype="multipart/form-data">
+            <form method="POST" action="" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 <div class="container">
                     <div class=" form-group">
                         <label for="id_name">Name:</label>
@@ -133,18 +119,15 @@
                         <label for="id_breed">Breed:</label>
                         <input type="text" id="id_breed" name="breed" value="{{ pet_instance.breed }}">
                     </div>
-                    <div class=" form-group">
-                        <label for="id_profilepic">ProfilePic:</label>
-                        <input type="file" id="id_profilepic" name="profile_pic"value="{{ pet_instance.profile_pic }}">
+                    <div class="form-group">
+                        <label for="id_profilepic">Profile pic:</label>
+                        {% if pet_instance.profile_pic %}
+                            <p>Currently: <a href="{{ pet_instance.profile_pic.url }}">{{ pet_instance.profile_pic.name }}</a></p>
+                            <p><input type="checkbox" name="profile_pic-clear" id="profile_pic-clear-id"> Clear</p>
+                        {% endif %}
+                        <p>Change: <input type="file" id="id_profilepic" name="profile_pic"></p>
                     </div>
                     
-                    
-                    <!-- {% if pet_instance.profile_picture %}
-                        <div class="form-group">
-                            <label>Current Profile Picture:</label><br>
-                            <img src="{{ pet_instance.profile_pic.url }}" alt="Profile Picture" style="max-width: 200px;">
-                        </div>
-                    {% endif %} -->
 
                     <div class="button-container">
                         <button type="submit">Save Changes</button>
