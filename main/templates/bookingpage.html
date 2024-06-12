@@ -72,22 +72,22 @@
         display: none;
     }
     .time-choice {
-    margin-right: 10px;  /* Adjust spacing between buttons */
-    margin-bottom: 10px; /* Adjust vertical spacing between buttons */
-    padding: 8px 12px;   /* Padding inside the buttons */
-    font-size: 14px;     /* Font size of the button text */
-    border: 1px solid #ccc;  /* Border color */
-    border-radius: 4px;  /* Rounded corners */
-    cursor: pointer;     /* Cursor style */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    margin-right: 10px;  
+    margin-bottom: 10px;
+    padding: 8px 12px;   
+    font-size: 14px;   
+    border: 1px solid #ccc;  
+    border-radius: 4px; 
+    cursor: pointer;    
+    transition: background-color 0.3s ease; 
     }
 
     .time-choice:hover {
-        background-color: #f0f0f0; /* Background color on hover */
+        background-color: #f0f0f0; 
     }
     .time-choice.selected {
-        background-color: #63baf5; /* Change background color when selected */
-        color: #fff; /* Change text color when selected */
+        background-color: #63baf5; 
+        color: #fff;
     }
     .time-choice:focus,
     .time-choice:active {
@@ -147,7 +147,6 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    // Function to update time choices based on selected service and date
     function updateTimes() {
         var service = $('#id_service').val();
         var date = $('#id_date').val();

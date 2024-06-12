@@ -29,19 +29,6 @@
     
 </style>
 
-<!-- <div id="external-events">
-  <h4 class="mb-4">Running Events</h4>
-  {% for booking in bookings %}
-    <div class="fc-event">
-        <h3>{{ booking.service }}</h3>
-        <p>{{ booking.id }}</p>
-        <p>From: {{ booking.checkin }}</p>
-        <p>To: {{ booking.checkout }}</p>
-    </div>
-  {% empty %}
-    <p>No Running Events Found</p>
-  {% endfor %}
-</div> -->
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -75,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           }
 
-          alert(message.trim());  // Display details in an alert (replace with modal logic if needed)
+          alert(message.trim());  
         }
       }
     });
