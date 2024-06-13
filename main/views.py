@@ -10,25 +10,27 @@ from .forms import CreateUserForm, UserUpdateForm, OwnerUpdateForm, PetForm, Boo
 from .models import Pet, Owner, Booking, Room, Feedback
 from django.urls import reverse
 from django.views.generic.edit import UpdateView
-from .forms import BookingForm, EditBookingForm
+from .forms import BookingForm, EditBookingForm, RoomForm
 import datetime
 from datetime import timedelta
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from datetime import datetime
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic.edit import UpdateView
-from .models import Booking, Owner
-from .forms import BookingForm, RoomForm
+
 
 def create_room(request):
     if request.method == 'POST':
         form = RoomForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('admin_dashboard')  # Replace 'room_list' with the name of your list view or any other view
+            return redirect('admin_dashboard')  
     else:
         form = RoomForm()
     return render(request, 'create_room.html', {'form': form})
     
+
 def AdminPage(request):
     rooms = Room.objects.all()
 
@@ -44,7 +46,7 @@ def AdminPage(request):
     
     sort_by = request.GET.get('sort_by', 'date')
 
-    order_by = '-date'  # default ordering
+    order_by = '-date' 
     if sort_by == 'id':
         order_by = 'id'
     elif sort_by == 'service':
@@ -63,6 +65,7 @@ def AdminPage(request):
         'rooms': rooms,
     }
     return render(request, 'admin_dashboard.html', context)
+
 
 class BookingUpdateView(UpdateView):
     model = Booking
@@ -97,7 +100,7 @@ def BookingPage(request):
                         room=room,
                         checkin__lte=booking.checkout,
                         checkout__gte=booking.checkin,
-                        service='Pet Hotel'  # Check only for Pet Hotel service
+                        service='Pet Hotel' 
                     ).exists()
                     if not overlapping_bookings:
                         booking.room = room
@@ -124,6 +127,7 @@ def BookingPage(request):
     context = {'form': form, 'bookings': bookings}
     return render(request, 'bookingpage.html', context)
 
+
 def update_times(request):
     service = request.GET.get('service')
     date = request.GET.get('date')
@@ -133,9 +137,6 @@ def update_times(request):
     
     return JsonResponse({'available_times': dict(available_times)})
 
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Booking
-from .forms import BookingForm
 
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
@@ -161,28 +162,12 @@ def edit_booking(request, booking_id):
 
 
 
-from django.shortcuts import get_object_or_404, redirect
-from django.views.generic.edit import UpdateView
-from .models import Booking
-from .forms import BookingForm
-from django.http import JsonResponse 
-
-
 def ownerpf(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     pets = booking.pet.all()
     print(pets)  # Debug output
     return render(request, 'admin_showprofile.html', {'booking': booking, 'pets': pets})
 
-# def petpf(request, booking_id):
-#     booking = get_object_or_404(Booking, id=booking_id)
-#     return render(request, 'admin_petprofile.html', {'booking': booking})
-from django.shortcuts import render
-from.models import Booking
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Booking
-import json
 
 
 def timetable(request):
@@ -193,29 +178,6 @@ def timetable(request):
     return render(request, 'timetable.html', context)
 
 
-def update_booking(request):
-    if request.method == 'POST':
-        event_id = request.POST.get('id')
-        start_str = request.POST.get('start')
-        end_str = request.POST.get('end')
-
-        try:
-            event = Booking.objects.get(id=event_id)
-            start_dt = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-            end_dt = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-            event.start = start_dt
-            event.end = end_dt
-            event.save()
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
-
-from django.http import JsonResponse
-from.models import Booking
-from django.http import JsonResponse
-from .models import Booking
 
 def get_booking(request):
     bookings = Booking.objects.all()  # Retrieve all bookings from the database
@@ -298,115 +260,6 @@ def get_booking(request):
     return JsonResponse(events, safe=False)
 
 
-# def get_booking(request):
-#     bookings = Booking.objects.all()
-
-#     events = []
-#     for booking in bookings:
-#         if booking.service == 'Hair Grooming':
-#             color = 'green'
-#         elif booking.service == 'Bath and Dry':
-#             color = 'light blue'
-#         elif booking.service == 'Pet Daycare':
-#             if booking.time == 'full_day':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - full ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'orange',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             elif booking.time == 'morning':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - morning ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'green',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             elif booking.time == 'noon':
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - noon ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'color': 'blue',
-#                     'allDay': True,
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#             else:
-#                 events.append({
-#                     'title': f'{booking.owner.user.username} - {booking.time} ({booking.id})',
-#                     'start': booking.date,
-#                     'end': booking.date,
-#                     'allDay': True,
-#                     'color': 'purple',
-#                     'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#                 })
-#         else:
-#             events.append({
-#                 'title': f'{booking.owner.user.username} - {booking.service} ({booking.id})',
-#                 'start': f"{booking.date}T{booking.time}",
-#                 'color': 'gray',
-#                 'description': f'Service: {booking.service}\nStatus: {booking.status}',
-#             })
-
-#     return JsonResponse(events, safe=False)
-
-# @csrf_exempt
-# @require_POST
-# def update_booking(request):
-#     try:
-#         data = request.POST
-#         event_id = data.get('id')
-#         start = data.get('start')
-#         end = data.get('end')
-
-#         # Log incoming data
-#         print('Received data:', event_id, start, end)
-
-#         event = Booking.objects.get(id=event_id)
-#         event.start = start
-#         event.end = end
-#         event.save()
-
-#         return JsonResponse({'success': True})
-#     except Booking.DoesNotExist:
-#         return JsonResponse({'success': False, 'error': 'Event not found'})
-#     except Exception as e:
-#         print('Error updating event:', str(e))
-#         return JsonResponse({'success': False, 'error': str(e)})
-
-def save_changes(request):
-    if request.method!= 'POST':
-        return JsonResponse({'success': False, 'error': 'Invalid request method'})
-
-    events = {}
-    for key, value in request.POST.items():
-        if key.startswith('id_'):
-            event_id = int(key.split('_')[1])
-            events[event_id] = {}
-        elif key.startswith('start_'):
-            event_id = int(key.split('_')[1])
-            events[event_id]['start'] = value
-        elif key.startswith('end_'):
-            event_id = int(key.split('_')[1])
-            events[event_id]['end'] = value
-
-    for event_id, event_data in events.items():
-        try:
-            booking = Booking.objects.get(id=event_id)
-            booking.start = event_data['start']
-            if 'end' in event_data:
-                booking.end = event_data['end']
-            else:
-                booking.end = None
-            booking.save()
-        except Booking.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Booking not found'})
-
-    return JsonResponse({'success': True})
 
 
 def CalendarPage(request):
@@ -416,6 +269,7 @@ def CalendarPage(request):
         "bookings": bookings,
     }
     return render(request, 'calendar.html', context)
+
 
 def all_bookings(request):
     owner = request.user.owner
@@ -445,18 +299,18 @@ def all_bookings(request):
         elif booking.service in ['Pet Hotel']:
             if booking.checkin and booking.checkout:
                 room_data = {
-                    'name': booking.room.name,  # Example: Assuming 'room' has a 'name' field
+                    'name': booking.room.name,  
                 }
-                pets = booking.pet.all()  # Fetch all pets associated with this booking
+                pets = booking.pet.all() 
                 pet_names = ', '.join([pet.name for pet in pets])                
-                end_date = booking.checkout + timedelta(days=1)  # Adjust end date to be exclusive
+                end_date = booking.checkout + timedelta(days=1)  
                 out.append({
                     'title': booking.service,
                     'id': booking.id,
                     'start': booking.checkin.strftime("%Y-%m-%dT%H:%M:%S"),
                     'end': end_date.strftime("%Y-%m-%dT%H:%M:%S"),
                     'allDay': True,
-                    'color': '#32CD32' ,  # Different colors
+                    'color': '#32CD32' ,  
                     'details': {
                         'id': booking.id,
                         'Checkin': booking.checkin.strftime("%Y-%m-%d"),
@@ -480,17 +334,18 @@ def room_detail(request, room_id=None):
 
     return render(request, 'room_detail.html', context)
 
+
 def get_room_events(request, room_id):
     bookings = Booking.objects.filter(room_id=room_id, service='Pet Hotel')
 
     events = []
     for booking in bookings:
         start_time = booking.checkin.strftime("%Y-%m-%dT%H:%M:%S") if booking.checkin else None
-        end_date = booking.checkout + timedelta(days=1)  # Adjust end date to be exclusive
-        pets = booking.pet.all()  # Fetch all pets associated with this booking
+        end_date = booking.checkout + timedelta(days=1)  
+        pets = booking.pet.all()  
         pet_names = ', '.join([pet.name for pet in pets]) 
         room_data = {
-            'name': booking.room.name,  # Example: Assuming 'room' has a 'name' field
+            'name': booking.room.name,  
         }
 
         title = f"Booking ID: {booking.id} - {pet_names}"   
@@ -510,20 +365,14 @@ def get_room_events(request, room_id):
                 'Pets': pet_names,
                 'Owner' : booking.owner.user.username,
                 'ContactNumber' : booking.owner.phone_number
-
-                # Add more details as needed
             }
 
 
         })
 
     return JsonResponse(events, safe=False)
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-import json
-from datetime import datetime
-from .models import Booking
+
+
 @csrf_exempt
 def resize_booking(request):
     if request.method != 'POST':
@@ -570,6 +419,7 @@ def resize_booking(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid date format.'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
 
 @csrf_exempt
 def update_booking_dates(request):
@@ -618,6 +468,7 @@ def update_booking_dates(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
     
+
 def PetprofilePage(request):
     try:
         owner_instance = Owner.objects.get(user=request.user)
@@ -625,10 +476,6 @@ def PetprofilePage(request):
         messages.error(request, 'pls create a owner profile first')
         return redirect ('profile')
     pet_instances = Pet.objects.filter(owner=owner_instance)
-    # if not pet_instances:
-    #     pet_instance = None
-    # else:
-    #     pet_instance = pet_instances.first()
     if request.method == 'POST':
         form = PetForm(request.POST, request.FILES)
         if form.is_valid():
@@ -645,6 +492,7 @@ def PetprofilePage(request):
 
     context = {'form':form, 'pet_instances': pet_instances}
     return render(request, 'petprofile.html', context)
+
 
 def edit_pet(request, pet_id):
     pet_instance = get_object_or_404(Pet, id=pet_id)
@@ -693,6 +541,7 @@ def profilePage(request):
     
     return render(request, 'profile.html', context)
 
+
 def registerPage(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -710,6 +559,7 @@ def registerPage(request):
 
         context = {'form':form}
         return render(request, 'register.html', context)
+
 
 def loginPage(request):
     if request.user.is_authenticated:
@@ -731,18 +581,22 @@ def loginPage(request):
         context = {}
         return render(request, 'login.html', context)
 
+
 def logoutUser(request):
     logout(request)    
     return redirect('home')
+
 
 def home(request):
     context={}
     return render(request, "home.html", context)
 
+
 @login_required
 def customer_booking(request):
     owner = request.user.owner
     bookings = Booking.objects.filter(owner=owner, )
+    
     
     context = {
         'bookings': bookings,
@@ -750,9 +604,6 @@ def customer_booking(request):
     
     return render(request, 'customer_booking.html', context)
 
-from django.shortcuts import render
-from django.http import JsonResponse
-from .models import Feedback
 
 def feedback(request):
     feedback = Feedback.objects.all()
@@ -762,9 +613,9 @@ def feedback(request):
         if rating:
             try:
                 rating = int(rating)
-                feedback_entry = Feedback(rating=rating, comment=comment)
+                feedback_entry = Feedback(owner=request.user.owner,rating=rating, comment=comment)
                 feedback_entry.save()
-                return JsonResponse({'status': 'success', 'message': 'Feedback received', 'rating': rating, 'comment': comment})
+                return JsonResponse({'status': 'success', 'message': 'Feedback received', 'rating': rating, 'comment': comment, 'owner': request.user.owner.user.username})
             except ValueError:
                 return JsonResponse({'status': 'error', 'message': 'Invalid rating value'})
     feedback = Feedback.objects.all()

@@ -76,6 +76,7 @@ class Booking(models.Model):
     checkout = models.DateField(null=True, blank=True)
 
 class Feedback(models.Model):
+    owner = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE)
     rating = models.IntegerField()
     comment = models.TextField(blank=True, null=True)
 

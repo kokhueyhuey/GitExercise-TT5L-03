@@ -31,4 +31,4 @@ admin.site.register(Room)
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('rating','comment')
+    list_display = ('owner','rating','comment')

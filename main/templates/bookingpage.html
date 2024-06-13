@@ -175,14 +175,13 @@ $(document).ready(function() {
                                 .text(value);
                             timeButtons.append(button);
                         });
-                        $('#fully-booked-message').empty(); // Clear the message if slots are available
+                        $('#fully-booked-message').empty();
                     }
                 }
             });
         }
     }
 
-    // Toggle visibility of check-in and check-out fields based on service selection
     function toggleFields() {
         var service = $('#id_service').val();
 
@@ -196,27 +195,22 @@ $(document).ready(function() {
             $('#time-field').removeClass('hidden');
             $('#checkin-field').addClass('hidden');
             $('#checkout-field').addClass('hidden');
-            updateTimes(); // Update times when switching back to regular services
+            updateTimes(); 
         }
     }
 
-    // Event listener for time slot selection
     $(document).on('click', '.time-choice', function() {
-        // Remove 'selected' class from previously selected button (if any)
         $('.time-choice').removeClass('selected');
         
-        // Add 'selected' class to the clicked button
         $(this).addClass('selected');
         
         var selectedTime = $(this).data('value');
         $('#id_time').val(selectedTime);
     });
 
-    // Event listeners for service and date changes
     $('#id_service').change(toggleFields);
     $('#id_date').change(updateTimes);
 
-    // Initial state setup
     toggleFields();
     updateTimes();
 });

@@ -60,55 +60,7 @@
             text-align: center;
 			border-radius: 5px;
         }
-    /* table {
-        margin: auto;
-        width: 60%;
-        border-collapse: collapse;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    th {
-        background-color:rgb(0, 0, 0);
-        color: rgb(255, 255, 255);
-        padding: 12px;
-        text-align: left;
-        width:20%;
-        border-bottom: 2px solid #ddd;
-    }
-
-    td {
-        padding: 12px;
-        background-color: #ede6e6;
-        text-align: left;
-        width:20%;
-        border-bottom: 1px solid #ddd;
-    }
-
-    tr:hover td {
-        background-color: #fdfbfb;
-    } */
-
-    /* .button {
-        background-color: #008CBA;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 14px;
-        margin-top: -8px;
-        margin-left: -10px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
-
-    .button:hover {
-        background-color: #005f7f;
-    } */
+        
     .profile_pic {
         width: 120px;
         height: 120px;
@@ -149,14 +101,9 @@
 
 
 </style>
-<!-- <a href="{% url 'profile' %}">Owner Profile</a> -->
 
-    <!-- <div class=""> -->
         <h1 class="ti">PetProfile</h1>
-        <!-- <p> {{ user.username }} </p>  -->
-        <!-- <p> {{ user.email }} </p> -->
     </div>
-    <!-- <h1>Pets of {{ request.user.owner }}</h1> -->
 
     <div class="pet-container">
         {% for pet_instance in pet_instances %}
@@ -174,44 +121,9 @@
         </div>
         {% endfor %}
     </div>
-    <!-- <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Species</th>
-            <th>Breed</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for pet_instance in pet_instances %}
-            <tr>
-                <td>{{ pet_instance.name }}</td>
-                <td>{{ pet_instance.age }}</td>
-                <td>{{ pet_instance.species }}</td>
-                <td>{{ pet_instance.breed }}</td>
-                <td>
-                    <form method="post" action="{% url 'edit_pet' pet_instance.id  %}" >
-                        {% csrf_token %}
-                        <button type="submit" class="button">Edit Pet</button>
-                    </form>                    
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="5">No pet profiles found.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>     -->
     <form method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="container">
-            <!-- <div class=" form-group">
-                <label for="id_email">Owner:</label>
-                {{ user.owner }}
-            </div> -->
             <div class=" form-group">
                 <label for="id_username">Name:</label>
                 {{ form.name }}
