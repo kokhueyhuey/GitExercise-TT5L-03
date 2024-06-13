@@ -597,6 +597,7 @@ def customer_booking(request):
     owner = request.user.owner
     bookings = Booking.objects.filter(owner=owner, )
     
+    
     context = {
         'bookings': bookings,
     }

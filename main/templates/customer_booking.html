@@ -5,8 +5,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <title>Customer Booking</title>
     <style>
+        .sorting-form {
+           display: flex;
+           align-items: center;
+        }
+
+        .sorting-form label {
+            margin-right: 10px;
+            margin-left: 50px;
+        }
+
+        .sort-select {
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .sort-button {
+            background-color: rgb(102, 58, 60);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .sort-button:hover {
+            background-color: rgb(255,223,203);
+            color: rgb(102, 58, 60);
+        }
+
         .dash {
             color: #FF5733; 
             font-family: Arial, sans-serif; 
@@ -46,9 +81,54 @@
         .button:hover {
             background-color: #0056b3; 
         }
+        .ab {
+            margin: 10px auto;
+            width: 96%;
+            border-collapse: collapse;
+        }
+        .ab th, td {
+            border: 1px solid rgb(102, 58, 60);
+            padding: 8px;
+            text-align: left;
+            background-color: white;
+        }
+        .ab th {
+            background-color: rgb(255,223,203);
+        }
+        .ti{
+            text-align: center; 
+            margin-top: 20px;
+
+        }
+        button {
+            background-color: rgb(102,58,60);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition:0.3s ease;
+        }       
+
+        button:hover {
+            background-color: rgb(255,223,203);
+            color: rgb(102,58,60);
+        }
+        a {
+            text-decoration: none;
+        }
+        .fas {
+            margin-right: 5px;
+        }
+
     </style>
 </head>
 <body>
+    <div style="margin-left: 10px;">
+        <a href="{% url 'bookingpage' %}"><button><i class="fas fa-arrow-left"></i> Go Back</button></a>
+    </div>
+
     <h1 class="ti">Customer Booking</h1>
     <div style="margin-top: 20px; margin-bottom: 20px;">
     <h2 class="dash">Your Bookings</h2>
@@ -61,7 +141,7 @@
         <button type="submit" class="sort-button">Sort</button>
     </form>
 
-    <table>
+    <table class="ab">
         <thead>
             <tr>
                 <th>Booking ID</th>

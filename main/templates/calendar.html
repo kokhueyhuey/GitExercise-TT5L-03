@@ -42,13 +42,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (details) {
           let message = 'Booking Details:\n';
 
-          if (details.Service === 'Hair Grooming' || details.Service === 'Bath and Dry') {
+          if (details.Service === 'Hair Grooming' || details.Service === 'Bath and Dry' || details.Service === 'Pet Daycare') {
             message += `BOOKINGID: ${details.id}\n`;
             message += `Service: ${details.Service}\n`;
             message += `Pet: ${details.Pets}\n`;
             message += `Date: ${details.Date}\n`;
             message += `Time: ${details.Time}\n`;
-          } else if (details.Service === 'Pet Hotel' || details.Service === 'Pet Daycare') {
+          } else if (details.Service === 'Pet Hotel' ) {
             message += `BOOKINGID: ${details.id}\n`;
             message += `Service: ${details.Service}\n`;
             message += `Checkin: ${details.Checkin}\n`;

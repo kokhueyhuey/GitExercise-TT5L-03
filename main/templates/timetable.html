@@ -4,6 +4,12 @@
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
+<div class="link">
+    <a href="{% url 'admin_dashboard'  %}">Admin dashboard</a> >
+    <a href="{% url 'timetable' %}">timetable</a>
+
+</div>
+
 <div id="calendar-container">
     <div id="calendar"></div>
     <!-- <div id="button-container">
@@ -80,7 +86,24 @@
     .daycare-noon {
         background-color: #FF6347;
     }
+    .link {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .link a {
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .link a:hover {
+        color: #666;
+        text-decoration: underline;
+    }
+
 </style>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
