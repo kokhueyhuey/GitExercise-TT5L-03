@@ -94,11 +94,19 @@
         outline: none !important;
         box-shadow: none !important;
     }
+    .view{
+        text-align: right;
+        font-size: large;
+    }
     
 </style>
 
 <div class="container">
     <h1>Booking</h1>
+    <div class="view">
+        <a href="{% url 'customer_booking' %}" class="button">View Booking</a>
+    </div>
+
     <form method="POST" action="">
         {% csrf_token %}
         <div class="form-group">
@@ -134,7 +142,6 @@
 
         <div class="button-container">
             <input type="submit" value="Save Booking">
-            <a href="{% url 'customer_booking' %}" class="button">View Booking</a>
         </div>
 
         {% for message in messages %}
